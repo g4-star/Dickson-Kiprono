@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { portfolio } from "./data/portfolio";
 import SecurityTeam from "./components/SecurityTeam";
+import CertificationsEducation from "./components/CertificationsEducation";
 import "./App.css";
 
 const cyberDomains = [
@@ -306,8 +307,8 @@ function App() {
   const goTo = (id) => {
     setMenuOpen(false);
 
-    if (id === "security-team") {
-      setCurrentPage("security-team");
+    if (id === "security-team" || id === "certifications") {
+      setCurrentPage(id);
       window.scrollTo({ top: 0, behavior: "auto" });
       return;
     }
@@ -334,6 +335,17 @@ function App() {
   if (currentPage === "security-team") {
     return (
       <SecurityTeam
+        onBack={() => {
+          setCurrentPage("home");
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }}
+      />
+    );
+  }
+
+  if (currentPage === "certifications") {
+    return (
+      <CertificationsEducation
         onBack={() => {
           setCurrentPage("home");
           window.scrollTo({ top: 0, behavior: "auto" });
@@ -371,6 +383,7 @@ function App() {
               ["skills", "Tools & Skills"],
               ["learning", "Learning"],
               ["services", "Services"],
+              ["certifications", "Certifications & Education"],
               ["security-team", "Security Team"],
               ["contact", "Contact"],
             ].map(([id, label]) => (
