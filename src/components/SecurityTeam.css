@@ -1061,3 +1061,36 @@
   }
 }
 
+
+/* Smaller, cleaner team slideshow */
+.security-team-showcase {
+  padding-top: 85px;
+  padding-bottom: 90px;
+}
+
+.security-team-showcase-heading {
+  margin-bottom: 32px;
+}
+
+.security-team-showcase .security-team-slideshow {
+  min-height: 500px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1000px) {
+  .security-team-showcase .security-team-slideshow {
+    min-height: 460px;
+  }
+}
+
+@media (max-width: 700px) {
+  .security-team-showcase {
+    padding-top: 65px;
+    padding-bottom: 70px;
+  }
+
+  .security-team-showcase .security-team-slideshow {
+    min-height: 360px;
+  }
+}

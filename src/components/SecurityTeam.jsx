@@ -173,6 +173,16 @@ export default function SecurityTeam({ onBack }) {
     );
   }
 
+  useEffect(() => {
+    if (slideshowImages.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setSlide((current) => (current + 1) % slideshowImages.length);
+    }, 4500);
+
+    return () => window.clearInterval(timer);
+  }, [slideshowImages.length]);
+
   const activeSlide = slideshowImages[slide];
 
   return (
