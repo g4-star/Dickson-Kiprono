@@ -1,6 +1,5 @@
 import { neon } from "@neondatabase/serverless";
 
-
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -23,19 +22,34 @@ export default async function handler(req, res) {
 
     const team = await sql`
       SELECT
-        id,
-        name,
-        role,
-        description,
-        image_url,
-        github_url,
-        linkedin_url,
-        portfolio_url,
-        display_order,
-        created_at
-      FROM security_team
-      WHERE is_active = TRUE
-      ORDER BY display_order ASC, created_at ASC
+        st.id,
+        st.name,
+        st.role,
+        st.description,
+        st.profile_image_url,
+        st.github_url,
+        st.linkedin_url,
+        st.portfolio_url,
+        st.display_order,
+        st.created_at,
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', sti.id,
+                'image_url', sti.image_url,
+                'display_order', sti.display_order
+              )
+              ORDER BY sti.display_order ASC, sti.created_at ASC
+            )
+            FROM security_team_images sti
+            WHERE sti.member_id = st.id
+          ),
+          '[]'::json
+        ) AS images
+      FROM security_team st
+      WHERE st.is_active = TRUE
+      ORDER BY st.display_order ASC, st.created_at ASC
     `;
 
     return res.status(200).json({

@@ -1,73 +1,130 @@
-import { useEffect, useState } from "react";
-import profileImage from "../assets/me.jpeg";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
+  Image as ImageIcon,
+  LockKeyhole,
   ShieldCheck,
-  Terminal,
-  Users,
+  X,
 } from "lucide-react";
 import "./SecurityTeam.css";
 import SecurityTeamAdmin from "./SecurityTeamAdmin";
 
 export default function SecurityTeam({ onBack }) {
   const [members, setMembers] = useState([]);
-  const [activeMember, setActiveMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [slide, setSlide] = useState(0);
+  const [selectedMember, setSelectedMember] = useState(null);
+
   const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
+  async function loadTeam() {
+    try {
+      setLoading(true);
+      setError("");
 
-    async function loadTeam() {
-      try {
-        setLoading(true);
-        setError("");
+      const response = await fetch("/api/security-team", {
+        credentials: "same-origin",
+      });
 
-        const response = await fetch("/api/security-team");
+      const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error("Unable to load security team");
-        }
-
-        const data = await response.json();
-        const team = Array.isArray(data.team) ? data.team : [];
-
-        if (!cancelled) {
-          setMembers(team);
-          setActiveMember(team[0] ?? null);
-        }
-      } catch {
-        if (!cancelled) {
-          setError("The security team could not be loaded.");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Unable to load security team");
       }
+
+      setMembers(Array.isArray(data.team) ? data.team : []);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "The security team could not be loaded.");
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     loadTeam();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
-  const openAdminLogin = () => {
-    setAdminError("");
-    setAdminPassword("");
-    setShowAdminLogin(true);
-  };
+  const slideshowImages = useMemo(() => {
+    const images = [];
 
-  const loginToAdmin = async (event) => {
+    members.forEach((member) => {
+      if (member.profile_image_url) {
+        images.push({
+          url: member.profile_image_url,
+          name: member.name,
+          type: "profile",
+        });
+      }
+
+      if (Array.isArray(member.images)) {
+        member.images.forEach((image) => {
+          if (image?.image_url) {
+            images.push({
+              url: image.image_url,
+              name: member.name,
+              type: "team",
+            });
+          }
+        });
+      }
+    });
+
+    return images;
+  }, [members]);
+
+  useEffect(() => {
+    setSlide(0);
+  }, [slideshowImages.length]);
+
+  useEffect(() => {
+    if (slideshowImages.length <= 1) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setSlide((current) => (current + 1) % slideshowImages.length);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, [slideshowImages.length]);
+
+  function previousSlide() {
+    if (!slideshowImages.length) return;
+
+    setSlide(
+      (current) =>
+        (current - 1 + slideshowImages.length) % slideshowImages.length
+    );
+  }
+
+  function nextSlide() {
+    if (!slideshowImages.length) return;
+
+    setSlide((current) => (current + 1) % slideshowImages.length);
+  }
+
+  function openAdminLogin() {
+    setAdminPassword("");
+    setAdminError("");
+    setShowAdminLogin(true);
+  }
+
+  async function loginToAdmin(event) {
     event.preventDefault();
+
+    if (!adminPassword.trim()) {
+      setAdminError("Enter the shared Security Team password.");
+      return;
+    }
 
     setAdminLoading(true);
     setAdminError("");
@@ -92,38 +149,34 @@ export default function SecurityTeam({ onBack }) {
 
       setAdminPassword("");
       setShowAdminLogin(false);
-      setAdminLoading(false);
-      setAdminError("");
       setShowAdminPanel(true);
     } catch (err) {
       setAdminError(err.message || "Access denied");
+    } finally {
       setAdminLoading(false);
     }
-  };
+  }
 
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  function logoutAdmin() {
+    setShowAdminPanel(false);
+    setShowAdminLogin(false);
+    setAdminPassword("");
+    setAdminError("");
+  }
 
   if (showAdminPanel) {
     return (
       <SecurityTeamAdmin
         initialAuthenticated={true}
-        onLogout={() => {
-          setShowAdminPanel(false);
-          setShowAdminLogin(false);
-          setAdminPassword("");
-          setAdminError("");
-        }}
+        onLogout={logoutAdmin}
       />
     );
   }
 
-  const scrollingMembers =
-    members.length > 1 ? [...members, ...members] : members;
+  const activeSlide = slideshowImages[slide];
 
   return (
     <main className="security-team-page">
-      <div className="security-team-bg" />
-
       <header className="security-team-nav">
         <button
           type="button"
@@ -134,431 +187,461 @@ export default function SecurityTeam({ onBack }) {
           <span>BACK TO PORTFOLIO</span>
         </button>
 
-        <div className="security-team-nav-title">
-          <span>DK / SECURITY NETWORK</span>
-          <small>CYBERSECURITY COMMUNITY</small>
+        <div className="security-team-brand">
+          <strong>DK / SECURITY TEAM</strong>
+          <span>CYBERSECURITY NETWORK</span>
         </div>
 
-        <div className="security-team-nav-status">
-          <i />
-          NETWORK ONLINE
-        </div>
+        <button
+          type="button"
+          className="security-team-access"
+          onClick={openAdminLogin}
+        >
+          <LockKeyhole size={15} />
+          TEAM ACCESS
+        </button>
       </header>
 
-      <section className="security-team-hero">
-        <div className="security-team-hero-copy">
-          <span className="security-team-kicker">
-            01 — SECURITY NETWORK
-          </span>
+      <section className="security-team-intro">
+        <div className="security-team-intro-copy">
+          <span className="security-team-label">SECURITY TEAM</span>
 
           <h1>
             The people
             <br />
             behind the
-            <br />
-            <em>learning.</em>
+            <em>work.</em>
           </h1>
 
           <p>
-            Cybersecurity is a collaborative discipline. This space
-            highlights classmates, friends, lab partners and members
-            of the technical network that contributes to learning,
-            practice and knowledge sharing.
+            Meet the people who contribute to cybersecurity learning,
+            research, experimentation, collaboration and technical
+            problem-solving. Each profile represents a member of the
+            growing security network.
           </p>
 
-          <div className="security-team-hero-meta">
-            <span>CYBERSECURITY</span>
-            <span>COLLABORATION</span>
-            <span>KENYA / REMOTE</span>
+          <div className="security-team-stat-row">
+            <div>
+              <strong>{String(members.length).padStart(2, "0")}</strong>
+              <span>TEAM MEMBERS</span>
+            </div>
+
+            <div>
+              <strong>{String(slideshowImages.length).padStart(2, "0")}</strong>
+              <span>TEAM IMAGES</span>
+            </div>
+
+            <div>
+              <strong>01</strong>
+              <span>SECURITY NETWORK</span>
+            </div>
           </div>
         </div>
 
-        <div className="security-room">
-          <div className="security-room-scanlines" />
+        <div className="security-team-slideshow">
+          {activeSlide ? (
+            <>
+              <div className="security-team-slide">
+                <img
+                  key={activeSlide.url}
+                  src={activeSlide.url}
+                  alt={`${activeSlide.name} Security Team`}
+                />
 
-          <div className="security-room-grid" />
+                <div className="security-team-slide-overlay" />
 
-          <div className="server-rack rack-one">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+                <div className="security-team-slide-caption">
+                  <span>SECURITY NETWORK / {activeSlide.type.toUpperCase()}</span>
+                  <strong>{activeSlide.name || "Security Team"}</strong>
+                </div>
+              </div>
 
-          <div className="server-rack rack-two">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+              {slideshowImages.length > 1 && (
+                <>
+                  <div className="security-team-slide-controls">
+                    <button
+                      type="button"
+                      onClick={previousSlide}
+                      aria-label="Previous team image"
+                    >
+                      <ArrowLeft size={17} />
+                    </button>
 
-          <div className="security-monitor">
-            <div className="monitor-top">
-              <span>SECURITY OPERATIONS</span>
-              <span>LIVE</span>
+                    <span>
+                      {String(slide + 1).padStart(2, "0")} /{" "}
+                      {String(slideshowImages.length).padStart(2, "0")}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={nextSlide}
+                      aria-label="Next team image"
+                    >
+                      <ArrowRight size={17} />
+                    </button>
+                  </div>
+
+                  <div className="security-team-slide-dots">
+                    {slideshowImages.map((image, index) => (
+                      <button
+                        type="button"
+                        key={`${image.url}-${index}`}
+                        className={index === slide ? "active" : ""}
+                        onClick={() => setSlide(index)}
+                        aria-label={`Show team image ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="security-team-slide-empty">
+              <ImageIcon size={42} />
+              <strong>No team images yet</strong>
+              <span>
+                Team images added through the authorized panel will appear
+                here automatically.
+              </span>
             </div>
-
-            <div className="monitor-lines">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-
-            <div className="monitor-terminal">
-              <small>$ network_status</small>
-              <strong>SECURE / ACTIVE</strong>
-              <small>$ team_connection</small>
-              <strong>ESTABLISHED</strong>
-            </div>
-          </div>
-
-          <div className="security-room-label">
-            <Terminal size={14} />
-            SECURITY OPERATIONS / TEAM ENVIRONMENT
-          </div>
+          )}
         </div>
       </section>
 
-      <section className="security-team-content">
+      <section className="security-team-members">
         <div className="security-team-section-heading">
           <div>
-            <span>02 — THE NETWORK</span>
-            <h2>Cybersecurity is stronger together.</h2>
+            <span>THE PEOPLE</span>
+            <h2>Meet the Security Team.</h2>
           </div>
 
           <p>
-            Technical skills grow through repetition, discussion,
-            experimentation and exposure to different ways of solving
-            the same problem.
+            Explore the members of the network, their specialties and the
+            work they contribute to the cybersecurity community.
           </p>
         </div>
 
-        <div className="security-team-network-panel">
-          <div className="network-panel-header">
-            <div>
-              <span>SECURITY NETWORK / PEOPLE</span>
-              <strong>
-                {loading
-                  ? "CONNECTING..."
-                  : `${String(members.length).padStart(2, "0")} MEMBERS`}
-              </strong>
-            </div>
-
-            <div className="network-live">
-              <i />
-              {loading ? "SYNCING" : "LIVE"}
-            </div>
+        {loading ? (
+          <div className="security-team-state">
+            <ShieldCheck size={27} />
+            <span>Loading Security Team...</span>
           </div>
+        ) : error ? (
+          <div className="security-team-state error">
+            <span>{error}</span>
 
-          <div className="security-admin-gateway">
-            <button
-              type="button"
-              className="security-admin-profile"
-              onClick={openAdminLogin}
-            >
-              <div className="security-admin-profile-photo">
-                <img
-                  src={profileImage}
-                  alt="Dickson Kiprono"
-                />
-                <span>ADMIN</span>
-              </div>
-
-              <div className="security-admin-profile-copy">
-                <span>RESTRICTED PROFILE</span>
-                <strong>Dickson Kiprono</strong>
-                <small>CYBERSECURITY / NETWORK ADMINISTRATOR</small>
-                <em>
-                  Input password to view
-                  <ArrowUpRight size={14} />
-                </em>
-              </div>
+            <button type="button" onClick={loadTeam}>
+              Try Again
             </button>
           </div>
-
-          {showAdminLogin && (
-            <div className="security-admin-gateway-overlay">
-              <div className="security-admin-gateway-panel">
+        ) : members.length === 0 ? (
+          <div className="security-team-state">
+            <ShieldCheck size={27} />
+            <span>The Security Team is being assembled.</span>
+          </div>
+        ) : (
+          <div className="security-team-grid">
+            {members.map((member) => (
+              <article
+                className="security-team-member-card"
+                key={member.id}
+              >
                 <button
                   type="button"
-                  className="security-admin-gateway-close"
-                  onClick={() => {
-                    setShowAdminLogin(false);
-                    setAdminPassword("");
-                    setAdminError("");
-                  }}
-                  aria-label="Close password panel"
+                  className="security-team-member-open"
+                  onClick={() => setSelectedMember(member)}
+                  aria-label={`View ${member.name} profile`}
                 >
-                  ×
+                  <div className="security-team-member-photo">
+                    {member.profile_image_url ? (
+                      <img
+                        src={member.profile_image_url}
+                        alt={member.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="security-team-member-placeholder">
+                        <ShieldCheck size={32} />
+                      </div>
+                    )}
+                  </div>
+
+                  <span className="security-team-member-index">
+                    MEMBER / {String(member.id).padStart(2, "0")}
+                  </span>
+
+                  <h3>{member.name || "Security Team Member"}</h3>
+
+                  <strong>
+                    {member.role || "Cybersecurity Professional"}
+                  </strong>
+
+                  <p>
+                    {member.description ||
+                      "Member of the cybersecurity network contributing to technical learning and collaboration."}
+                  </p>
+
+                  <span className="security-team-view">
+                    VIEW PROFILE
+                    <ArrowUpRight size={15} />
+                  </span>
                 </button>
 
-                <div className="security-admin-gateway-icon">
-                  <ShieldCheck size={28} />
-                </div>
-
-                <span className="security-admin-gateway-label">
-                  RESTRICTED SECURITY PROFILE
-                </span>
-
-                <h2>Input password to view</h2>
-
-                <p>
-                  This profile contains protected security network
-                  administration controls.
-                </p>
-
-                <form onSubmit={loginToAdmin}>
-                  <label htmlFor="security-gateway-password">
-                    ACCESS PASSWORD
-                  </label>
-
-                  <input
-                    id="security-gateway-password"
-                    type="password"
-                    value={adminPassword}
-                    onChange={(event) =>
-                      setAdminPassword(event.target.value)
-                    }
-                    autoComplete="current-password"
-                    autoFocus
-                    required
-                  />
-
-                  {adminError && (
-                    <div className="security-admin-gateway-error">
-                      {adminError}
-                    </div>
+                <div className="security-team-links">
+                  {member.github_url && (
+                    <a
+                      href={member.github_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${member.name} GitHub`}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      GH
+                      GitHub
+                    </a>
                   )}
 
-                  <button
-                    type="submit"
-                    className="security-admin-gateway-submit"
-                    disabled={adminLoading}
-                  >
-                    <ShieldCheck size={16} />
-                    {adminLoading
-                      ? "VERIFYING ACCESS..."
-                      : "ACCESS PROFILE"}
-                  </button>
-                </form>
-
-                <small className="security-admin-gateway-note">
-                  AUTHENTICATION IS VERIFIED BY THE SECURITY SERVER
-                </small>
-              </div>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="security-team-empty">
-              <Terminal size={24} />
-              <strong>CONNECTING TO SECURITY NETWORK</strong>
-              <p>
-                Retrieving team records from the portfolio backend.
-              </p>
-            </div>
-          ) : error ? (
-            <div className="security-team-empty">
-              <ShieldCheck size={24} />
-              <strong>NETWORK CONNECTION ERROR</strong>
-              <p>{error}</p>
-            </div>
-          ) : members.length === 0 ? (
-            <div className="security-team-empty">
-              <Users size={24} />
-              <strong>NETWORK READY</strong>
-              <p>
-                No team profiles have been added yet. Add your
-                classmates and security collaborators from the
-                protected administration panel.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="security-team-marquee">
-                <div className="security-team-track">
-                  {scrollingMembers.map((member, index) => (
-                    <button
-                      type="button"
-                      key={`${member.id}-${index}`}
-                      className={`security-member-card ${
-                        activeMember?.id === member.id ? "active" : ""
-                      }`}
-                      onClick={() => setActiveMember(member)}
+                  {member.linkedin_url && (
+                    <a
+                      href={member.linkedin_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${member.name} LinkedIn`}
+                      onClick={(event) => event.stopPropagation()}
                     >
-                      <div className="security-member-photo">
-                        {member.image_url ? (
-                          <img
-                            src={member.image_url}
-                            alt={member.name}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="security-member-placeholder">
-                            <ShieldCheck size={30} />
-                          </div>
-                        )}
+                      IN
+                      LinkedIn
+                    </a>
+                  )}
 
-                        <span>
-                          {String(
-                            (index % members.length) + 1,
-                          ).padStart(2, "0")}
-                        </span>
-                      </div>
-
-                      <div className="security-member-details">
-                        <strong>{member.name}</strong>
-                        <small>
-                          {member.role ||
-                            "CYBERSECURITY NETWORK MEMBER"}
-                        </small>
-                      </div>
-                    </button>
-                  ))}
+                  {member.portfolio_url && (
+                    <a
+                      href={member.portfolio_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${member.name} Portfolio`}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <ArrowUpRight size={15} />
+                      Portfolio
+                    </a>
+                  )}
                 </div>
-              </div>
-
-              <div className="security-team-marquee-note">
-                <span>AUTO-SCROLLING NETWORK</span>
-                <span>SELECT A MEMBER TO VIEW DETAILS</span>
-              </div>
-            </>
-          )}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
-      {activeMember && (
-        <section className="security-member-profile">
-          <div className="security-profile-photo">
-            {activeMember.image_url ? (
-              <img
-                src={activeMember.image_url}
-                alt={activeMember.name}
-              />
-            ) : (
-              <div className="security-profile-placeholder">
-                <ShieldCheck size={48} />
-              </div>
-            )}
-
-            <span>
-              MEMBER / {String(activeMember.id).padStart(3, "0")}
-            </span>
-          </div>
-
-          <div className="security-profile-copy">
-            <span className="security-team-kicker">
-              03 — MEMBER PROFILE
-            </span>
-
-            <h2>{activeMember.name}</h2>
-
-            <strong>
-              {activeMember.role || "Cybersecurity Community"}
-            </strong>
-
-            <p>
-              {activeMember.description ||
-                "A member of the cybersecurity learning and collaboration network."}
-            </p>
-
-            <div className="security-profile-links">
-              {activeMember.github_url && (
-                <a
-                  href={activeMember.github_url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                  <ArrowUpRight size={16} />
-                </a>
-              )}
-
-              {activeMember.linkedin_url && (
-                <a
-                  href={activeMember.linkedin_url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LinkedIn
-                  <ArrowUpRight size={16} />
-                </a>
-              )}
-
-              {activeMember.portfolio_url && (
-                <a
-                  href={activeMember.portfolio_url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Portfolio
-                  <ArrowUpRight size={16} />
-                </a>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="security-team-principles">
+      <section className="security-team-cta">
         <div>
-          <span>04 — COLLABORATION</span>
-          <h2>What we build through shared learning.</h2>
+          <span>AUTHORIZED TEAM ACCESS</span>
+          <h2>Team management is restricted.</h2>
+          <p>
+            Authorized Security Team members can add profiles, update
+            information, manage images and maintain the network.
+          </p>
         </div>
 
-        <div className="security-principle-grid">
-          <article>
-            <span>01</span>
-            <h3>Practice</h3>
-            <p>
-              Working through practical labs and technical exercises
-              turns security concepts into skills that can be applied.
-            </p>
-          </article>
-
-          <article>
-            <span>02</span>
-            <h3>Knowledge</h3>
-            <p>
-              Sharing approaches and explaining difficult concepts
-              helps strengthen everyone's understanding.
-            </p>
-          </article>
-
-          <article>
-            <span>03</span>
-            <h3>Collaboration</h3>
-            <p>
-              Security problems often require different perspectives,
-              making collaboration an important technical advantage.
-            </p>
-          </article>
-
-          <article>
-            <span>04</span>
-            <h3>Growth</h3>
-            <p>
-              Every lab, investigation and discussion contributes to
-              deeper technical capability and professional growth.
-            </p>
-          </article>
-        </div>
+        <button type="button" onClick={openAdminLogin}>
+          <LockKeyhole size={17} />
+          ENTER TEAM ACCESS
+        </button>
       </section>
 
       <footer className="security-team-footer">
-        <span>DK / SECURITY NETWORK</span>
-
         <button type="button" onClick={onBack}>
-          RETURN TO PORTFOLIO
-          <ArrowLeft size={15} />
+          <ArrowLeft size={16} />
+          BACK TO PORTFOLIO
         </button>
+
+        <span>DK / SECURITY NETWORK</span>
       </footer>
+
+      {selectedMember && (
+        <div
+          className="security-team-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${selectedMember.name} profile`}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedMember(null);
+            }
+          }}
+        >
+          <div className="security-team-profile">
+            <button
+              type="button"
+              className="security-team-modal-close"
+              onClick={() => setSelectedMember(null)}
+              aria-label="Close profile"
+            >
+              <X size={19} />
+            </button>
+
+            <div className="security-team-profile-header">
+              <div className="security-team-profile-photo">
+                {selectedMember.profile_image_url ? (
+                  <img
+                    src={selectedMember.profile_image_url}
+                    alt={selectedMember.name}
+                  />
+                ) : (
+                  <ShieldCheck size={38} />
+                )}
+              </div>
+
+              <div>
+                <span>SECURITY TEAM MEMBER</span>
+                <h2>{selectedMember.name}</h2>
+                <strong>{selectedMember.role}</strong>
+              </div>
+            </div>
+
+            <div className="security-team-profile-body">
+              <p>
+                {selectedMember.description ||
+                  "This member is part of the cybersecurity network."}
+              </p>
+
+              <div className="security-team-profile-links">
+                {selectedMember.github_url && (
+                  <a
+                    href={selectedMember.github_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    GH
+                    GitHub
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
+
+                {selectedMember.linkedin_url && (
+                  <a
+                    href={selectedMember.linkedin_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    IN
+                    LinkedIn
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
+
+                {selectedMember.portfolio_url && (
+                  <a
+                    href={selectedMember.portfolio_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ArrowUpRight size={16} />
+                    Portfolio
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
+              </div>
+
+              {Array.isArray(selectedMember.images) &&
+                selectedMember.images.length > 0 && (
+                  <div className="security-team-profile-gallery">
+                    <div className="security-team-profile-gallery-heading">
+                      <span>ADDITIONAL IMAGES</span>
+                      <strong>
+                        {selectedMember.images.length}{" "}
+                        {selectedMember.images.length === 1
+                          ? "IMAGE"
+                          : "IMAGES"}
+                      </strong>
+                    </div>
+
+                    <div className="security-team-profile-images">
+                      {selectedMember.images.map((image) => (
+                        <img
+                          key={image.id}
+                          src={image.image_url}
+                          alt={`${selectedMember.name} additional`}
+                          loading="lazy"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAdminLogin && (
+        <div
+          className="security-team-login-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Security Team authorization"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowAdminLogin(false);
+            }
+          }}
+        >
+          <form
+            className="security-team-login"
+            onSubmit={loginToAdmin}
+          >
+            <button
+              type="button"
+              className="security-team-modal-close"
+              onClick={() => setShowAdminLogin(false)}
+              aria-label="Close authorization"
+            >
+              <X size={19} />
+            </button>
+
+            <div className="security-team-login-icon">
+              <LockKeyhole size={24} />
+            </div>
+
+            <span>RESTRICTED AREA</span>
+
+            <h2>Security Team Access</h2>
+
+            <p>
+              Enter the shared Security Team password to access the
+              authorized management panel.
+            </p>
+
+            <label>
+              Shared password
+              <input
+                type="password"
+                value={adminPassword}
+                onChange={(event) => {
+                  setAdminPassword(event.target.value);
+                  setAdminError("");
+                }}
+                autoFocus
+                autoComplete="current-password"
+                placeholder="Enter password"
+              />
+            </label>
+
+            {adminError && (
+              <div className="security-team-login-error">
+                {adminError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="security-team-login-submit"
+              disabled={adminLoading}
+            >
+              {adminLoading ? "AUTHORIZING..." : "AUTHORIZE ACCESS"}
+            </button>
+          </form>
+        </div>
+      )}
     </main>
   );
 }
