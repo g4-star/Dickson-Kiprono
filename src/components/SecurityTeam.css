@@ -1151,3 +1151,158 @@
     min-height: 250px;
   }
 }
+
+/* =========================================================
+   SECURITY TEAM — TEXT-BASED HERO RIGHT PANEL
+   ========================================================= */
+
+.security-team-intro {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.security-team-intro-copy {
+  border-right: 1px solid var(--st-border);
+}
+
+.security-team-hero-right {
+  position: relative;
+  min-width: 0;
+  min-height: 680px;
+  padding: 75px 7vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.security-team-hero-right::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 42%;
+  height: 1px;
+  background: var(--st-accent);
+  opacity: .65;
+}
+
+.security-team-hero-right-label {
+  position: absolute;
+  top: 28px;
+  right: 7vw;
+  color: var(--st-dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.security-team-hero-right-content {
+  max-width: 520px;
+  animation: security-team-text-in .55s ease;
+}
+
+.security-team-hero-right-content > span {
+  color: var(--st-accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .17em;
+}
+
+.security-team-hero-right-content h2 {
+  margin: 20px 0 25px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(34px, 4vw, 58px);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+.security-team-hero-right-content h2 em {
+  display: block;
+  color: var(--st-accent);
+  font-style: normal;
+}
+
+.security-team-hero-right-content p {
+  max-width: 500px;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.security-team-hero-right-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 42px;
+}
+
+.security-team-hero-right-meta strong {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 18px;
+}
+
+.security-team-hero-right-meta span {
+  color: var(--st-dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.security-team-hero-right-lines {
+  position: absolute;
+  right: 7vw;
+  bottom: 34px;
+  left: 7vw;
+  display: flex;
+  gap: 6px;
+}
+
+.security-team-hero-right-lines button {
+  flex: 1;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--st-border);
+  cursor: pointer;
+}
+
+.security-team-hero-right-lines button.active {
+  background: var(--st-accent);
+}
+
+@media (max-width: 1000px) {
+  .security-team-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .security-team-intro-copy {
+    border-right: 0;
+    border-bottom: 1px solid var(--st-border);
+  }
+
+  .security-team-hero-right {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 700px) {
+  .security-team-hero-right {
+    min-height: 430px;
+    padding: 55px 22px;
+  }
+
+  .security-team-hero-right-label {
+    right: 22px;
+  }
+
+  .security-team-hero-right-lines {
+    right: 22px;
+    bottom: 22px;
+    left: 22px;
+  }
+}

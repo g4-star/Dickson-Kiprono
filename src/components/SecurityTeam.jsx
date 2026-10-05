@@ -216,6 +216,61 @@ export default function SecurityTeam({ onBack }) {
 
   const [heroSlide, setHeroSlide] = useState(0);
 
+  const heroFocus = [
+    {
+      number: "01",
+      category: "SECURITY OPERATIONS",
+      title: "Monitor.",
+      accent: " Detect.",
+      description:
+        "Understanding security events, investigating unusual activity and building the awareness needed to respond before small issues become serious incidents.",
+    },
+    {
+      number: "02",
+      category: "PENETRATION TESTING",
+      title: "Find the",
+      accent: " weakness.",
+      description:
+        "Authorized offensive testing helps reveal vulnerabilities, attack paths and weaknesses before they can be exploited by real attackers.",
+    },
+    {
+      number: "03",
+      category: "VULNERABILITY ASSESSMENT",
+      title: "Identify.",
+      accent: " Prioritize.",
+      description:
+        "Security assessment is about understanding which weaknesses matter, why they matter and how organizations can reduce their exposure.",
+    },
+    {
+      number: "04",
+      category: "DIGITAL INVESTIGATION",
+      title: "Follow the",
+      accent: " evidence.",
+      description:
+        "Investigation requires careful analysis, documentation and disciplined thinking to understand what happened and preserve useful findings.",
+    },
+    {
+      number: "05",
+      category: "DEFENSIVE SECURITY",
+      title: "Build stronger",
+      accent: " defenses.",
+      description:
+        "Hardening, monitoring, awareness and response planning turn security knowledge into practical resilience for systems and organizations.",
+    },
+  ];
+
+  const [heroFocusIndex, setHeroFocusIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setHeroFocusIndex((current) => (current + 1) % heroFocus.length);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+
+
   useEffect(() => {
     const timer = window.setInterval(() => {
       setHeroSlide((current) => (current + 1) % heroSlides.length);
@@ -297,6 +352,45 @@ export default function SecurityTeam({ onBack }) {
             </div>
           </div>
         </div>
+        <div className="security-team-hero-right">
+          <span className="security-team-hero-right-label">
+            SECURITY / {heroFocus[heroFocusIndex].number}
+          </span>
+
+          <div
+            key={heroFocusIndex}
+            className="security-team-hero-right-content"
+          >
+            <span>{heroFocus[heroFocusIndex].category}</span>
+
+            <h2>
+              {heroFocus[heroFocusIndex].title}
+              <em>{heroFocus[heroFocusIndex].accent}</em>
+            </h2>
+
+            <p>
+              {heroFocus[heroFocusIndex].description}
+            </p>
+
+            <div className="security-team-hero-right-meta">
+              <strong>{heroFocus[heroFocusIndex].number}</strong>
+              <span>SECURITY FOCUS</span>
+            </div>
+          </div>
+
+          <div className="security-team-hero-right-lines">
+            {heroFocus.map((item, index) => (
+              <button
+                type="button"
+                key={item.number}
+                className={index === heroFocusIndex ? "active" : ""}
+                onClick={() => setHeroFocusIndex(index)}
+                aria-label={`Show ${item.category}`}
+              />
+            ))}
+          </div>
+        </div>
+
       </section>
 
       <section className="security-team-people">
