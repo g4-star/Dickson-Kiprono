@@ -1094,3 +1094,60 @@
     min-height: 360px;
   }
 }
+
+/* =========================================================
+   SECURITY TEAM — HERO TEXT ROTATOR
+   ========================================================= */
+
+.security-team-hero-rotator {
+  min-height: 280px;
+}
+
+.security-team-hero-rotating {
+  display: block;
+  color: var(--st-accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  animation: security-team-text-in .55s ease;
+}
+
+.security-team-hero-rotator h1 {
+  animation: security-team-text-in .55s ease;
+}
+
+.security-team-hero-rotating-copy {
+  max-width: 590px;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 14px;
+  line-height: 1.85;
+  animation: security-team-text-in .55s ease;
+}
+
+@keyframes security-team-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .security-team-hero-rotating,
+  .security-team-hero-rotator h1,
+  .security-team-hero-rotating-copy {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .security-team-hero-rotator {
+    min-height: 250px;
+  }
+}

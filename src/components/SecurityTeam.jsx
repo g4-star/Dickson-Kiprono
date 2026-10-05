@@ -183,6 +183,47 @@ export default function SecurityTeam({ onBack }) {
     return () => window.clearInterval(timer);
   }, [slideshowImages.length]);
 
+  const heroSlides = [
+    {
+      label: "PEOPLE BEHIND THE WORK",
+      title: "Security starts",
+      accent: "with people.",
+      description:
+        "A growing network of people focused on cybersecurity, research, collaboration and practical security problem-solving.",
+    },
+    {
+      label: "OFFENSIVE SECURITY",
+      title: "Think like",
+      accent: "an attacker.",
+      description:
+        "Understanding vulnerabilities, attack paths and weaknesses helps us build stronger defenses.",
+    },
+    {
+      label: "DEFENSIVE SECURITY",
+      title: "Build stronger",
+      accent: "defenses.",
+      description:
+        "Detection, monitoring, hardening and incident-response thinking help turn security knowledge into resilience.",
+    },
+    {
+      label: "CONTINUOUS LEARNING",
+      title: "Stay ahead of",
+      accent: "the threat.",
+      description:
+        "Cybersecurity changes constantly. Research, practical labs and continuous learning keep the team moving forward.",
+    },
+  ];
+
+  const [heroSlide, setHeroSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setHeroSlide((current) => (current + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   const activeSlide = slideshowImages[slide];
 
   return (
@@ -216,12 +257,21 @@ export default function SecurityTeam({ onBack }) {
         <div className="security-team-intro-copy">
           <span className="security-team-label">SECURITY TEAM</span>
 
-          <h1>
-            The people
-            <br />
-            behind the
-            <em>work.</em>
-          </h1>
+          <div className="security-team-hero-rotator">
+            <span key={heroSlide} className="security-team-hero-rotating">
+              {heroSlides[heroSlide].label}
+            </span>
+
+            <h1 key={`title-${heroSlide}`}>
+              {heroSlides[heroSlide].title}
+              <br />
+              <em>{heroSlides[heroSlide].accent}</em>
+            </h1>
+
+            <p key={`text-${heroSlide}`} className="security-team-hero-rotating-copy">
+              {heroSlides[heroSlide].description}
+            </p>
+          </div>
 
           <p>
             Meet the people contributing to cybersecurity learning, research,
