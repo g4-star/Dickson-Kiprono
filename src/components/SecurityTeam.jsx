@@ -693,21 +693,7 @@ export default function SecurityTeam({ onBack }) {
         )}
       </section>
 
-      <section className="security-team-cta">
-        <div>
-          <span>AUTHORIZED TEAM ACCESS</span>
-          <h2>Team management is restricted.</h2>
-          <p>
-            Authorized Security Team members can add profiles, update
-            information, manage images and maintain the network.
-          </p>
-        </div>
 
-        <button type="button" onClick={openAdminLogin}>
-          <LockKeyhole size={17} />
-          ENTER TEAM ACCESS
-        </button>
-      </section>
 
       <footer className="security-team-footer">
         <button type="button" onClick={onBack}>
