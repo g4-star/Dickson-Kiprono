@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import profileImage from "./assets/me.jpeg";
 import {
   ArrowUpRight,
   ChevronRight,
@@ -350,7 +351,7 @@ function App() {
           <button className="brand" onClick={() => goTo("home")}>
             <span className="brand-mark brand-photo">
               <img
-                src="/src/assets/me.jpeg"
+                src={profileImage}
                 alt="Dickson Kiprono"
               />
             </span>
@@ -455,7 +456,7 @@ function App() {
             <div className="hero-photo-card">
               <div className="hero-photo-frame">
                 <img
-                  src="/src/assets/me.jpeg"
+                  src={profileImage}
                   alt="Dickson Kiprono — Cybersecurity Professional"
                 />
                 <div className="hero-photo-label">DICKSON KIPRONO / SECURITY</div>

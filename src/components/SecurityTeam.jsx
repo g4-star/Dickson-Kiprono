@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import profileImage from "../assets/me.jpeg";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -263,7 +264,7 @@ export default function SecurityTeam({ onBack }) {
             >
               <div className="security-admin-profile-photo">
                 <img
-                  src="/src/assets/me.jpeg"
+                  src={profileImage}
                   alt="Dickson Kiprono"
                 />
                 <span>ADMIN</span>
