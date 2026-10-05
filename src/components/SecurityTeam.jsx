@@ -214,10 +214,10 @@ export default function SecurityTeam({ onBack }) {
           </h1>
 
           <p>
-            Meet the people who contribute to cybersecurity learning,
-            research, experimentation, collaboration and technical
-            problem-solving. Each profile represents a member of the
-            growing security network.
+            Meet the people contributing to cybersecurity learning, research,
+            experimentation, collaboration and technical problem-solving.
+            Together, we build knowledge, investigate security challenges and
+            develop practical skills for protecting digital environments.
           </p>
 
           <div className="security-team-stat-row">
@@ -236,6 +236,111 @@ export default function SecurityTeam({ onBack }) {
               <span>SECURITY NETWORK</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="security-team-people">
+        <div className="security-team-people-heading">
+          <span>PEOPLE BEHIND THE WORK</span>
+          <h2>Built by people who take security seriously.</h2>
+        </div>
+
+        <div className="security-team-people-content">
+          <p>
+            The Security Team brings together cybersecurity professionals,
+            security practitioners, researchers and technology enthusiasts
+            with a shared commitment to protecting people, systems and digital
+            environments. Our work is built around the understanding that
+            effective cybersecurity is not the responsibility of a single
+            person or a single discipline. Strong security comes from people
+            who can investigate problems, understand vulnerabilities, analyze
+            threats, strengthen defenses and continuously improve their
+            knowledge.
+          </p>
+
+          <p>
+            Our collective focus covers security operations, penetration
+            testing, vulnerability assessment, digital investigations,
+            defensive security, security awareness and incident-response
+            thinking. Different members bring different strengths and
+            perspectives, allowing the team to examine security challenges
+            from multiple angles. Offensive security helps us understand how
+            systems can be attacked, while defensive security helps us design
+            better ways to detect, contain and prevent those attacks.
+          </p>
+
+          <p>
+            Practical experience is at the center of the team's development.
+            Through hands-on laboratories, controlled security assessments,
+            technical experimentation, research and real-world problem
+            solving, members continue developing the ability to identify
+            weaknesses and understand the technologies behind them. The goal
+            is not simply to learn security concepts, but to understand how
+            those concepts apply when protecting real systems, applications,
+            networks, organizations and people.
+          </p>
+
+          <p>
+            Collaboration is equally important. Cybersecurity changes
+            constantly, and no individual can know everything. Sharing
+            knowledge, discussing findings, reviewing techniques and learning
+            from mistakes allows every member to improve. A vulnerability
+            discovered by one person can become a learning opportunity for
+            the entire team, while a defensive technique developed by another
+            member can strengthen the team's overall security awareness.
+          </p>
+
+          <p>
+            Ethical responsibility is fundamental to the way we approach
+            security work. Testing, research and experimentation should be
+            performed with authorization and within responsible boundaries.
+            We support ethical security testing, responsible disclosure,
+            privacy-conscious research and security-first decision making.
+            Technical ability should be used to identify risk, improve
+            resilience and contribute to safer digital environments rather
+            than create unnecessary harm.
+          </p>
+
+          <p>
+            The team also maintains an incident-response mindset. Security is
+            not only about preventing attacks; it is also about being prepared
+            to recognize unusual activity, investigate what happened,
+            understand the impact and respond effectively. Developing this
+            mindset helps members think beyond individual tools and focus on
+            the complete security lifecycle: preparation, detection,
+            analysis, response, recovery and continuous improvement.
+          </p>
+
+          <p>
+            Continuous learning is therefore part of the team's culture. New
+            vulnerabilities, attack techniques, technologies and defensive
+            methods appear every day. Members are encouraged to explore new
+            tools, study security research, work through practical labs,
+            document their findings and challenge their existing assumptions.
+            Curiosity is treated as an important security skill because the
+            ability to keep learning is essential in a rapidly changing
+            technical environment.
+          </p>
+
+          <p>
+            Together, the people featured on this page represent a growing
+            security network focused on practical cybersecurity, technical
+            collaboration and responsible innovation. Their specialties may
+            differ, but the objective remains the same: understand security
+            problems, develop better solutions, share knowledge and use
+            cybersecurity skills to make digital environments more resilient.
+          </p>
+        </div>
+      </section>
+
+      <section className="security-team-showcase">
+        <div className="security-team-showcase-heading">
+          <span>SECURITY NETWORK / TEAM ARCHIVE</span>
+          <h2>Inside the Security Team.</h2>
+          <p>
+            A visual look at the people, collaboration and technical work
+            behind the network.
+          </p>
         </div>
 
         <div className="security-team-slideshow">
@@ -316,8 +421,9 @@ export default function SecurityTeam({ onBack }) {
           </div>
 
           <p>
-            Explore the members of the network, their specialties and the
-            work they contribute to the cybersecurity community.
+            Explore the individual members of the network, their specialties,
+            experience and the work they contribute to the cybersecurity
+            community.
           </p>
         </div>
 
