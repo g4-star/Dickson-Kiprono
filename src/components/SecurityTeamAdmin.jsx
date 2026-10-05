@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
   ImagePlus,
-  LogIn,
+  Loader2,
   LogOut,
   ShieldCheck,
+  Trash2,
   Upload,
-  UserPlus,
+  X,
 } from "lucide-react";
 import "./SecurityTeamAdmin.css";
 
@@ -15,53 +16,60 @@ export default function SecurityTeamAdmin({
   initialAuthenticated = false,
   onLogout,
 }) {
-  const [authenticated, setAuthenticated] = useState(initialAuthenticated);
-  const [password, setPassword] = useState("");
+  const [authenticated] = useState(initialAuthenticated);
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [description, setDescription] = useState("");
-  const [github, setGithub] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [portfolio, setPortfolio] = useState("");
+
+  const [members, setMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(true);
+
+  const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const login = async (event) => {
-    event.preventDefault();
+  const fileInputRef = useRef(null);
 
-    setLoading(true);
-    setError("");
-    setMessage("");
+  useEffect(() => {
+    if (!authenticated) {
+      return;
+    }
 
+    loadImages();
+  }, [authenticated]);
+
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  async function loadImages() {
     try {
-      const response = await fetch("/api/admin-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "same-origin",
-        body: JSON.stringify({ password }),
-      });
+      setLoadingMembers(true);
+      setError("");
+
+      const response = await fetch("/api/security-team");
 
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Login failed");
+        throw new Error(data.error || "Unable to load images");
       }
 
-      setAuthenticated(true);
-      setPassword("");
+      setMembers(Array.isArray(data.team) ? data.team : []);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Unable to load images");
     } finally {
-      setLoading(false);
+      setLoadingMembers(false);
     }
-  };
+  }
 
-  const selectImage = (event) => {
+  function selectImage(event) {
     const selected = event.target.files?.[0];
 
     if (!selected) {
@@ -73,42 +81,52 @@ export default function SecurityTeamAdmin({
 
     if (!["image/jpeg", "image/png", "image/webp"].includes(selected.type)) {
       setError("Use JPG, PNG or WebP.");
+      event.target.value = "";
       return;
     }
 
     if (selected.size > 5 * 1024 * 1024) {
       setError("Image must be 5 MB or smaller.");
+      event.target.value = "";
       return;
+    }
+
+    if (preview) {
+      URL.revokeObjectURL(preview);
     }
 
     setImage(selected);
+    setPreview(URL.createObjectURL(selected));
+  }
 
-    const objectUrl = URL.createObjectURL(selected);
-    setPreview(objectUrl);
-  };
+  function clearSelectedImage() {
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
 
-  const uploadMember = async (event) => {
+    setImage(null);
+    setPreview("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  async function uploadImage(event) {
     event.preventDefault();
 
     if (!image) {
-      setError("Please select a profile image.");
+      setError("Select an image first.");
       return;
     }
 
-    setLoading(true);
+    setUploading(true);
     setError("");
     setMessage("");
 
     try {
       const formData = new FormData();
-
       formData.append("image", image);
-      formData.append("name", name);
-      formData.append("role", role);
-      formData.append("description", description);
-      formData.append("github_url", github);
-      formData.append("linkedin_url", linkedin);
-      formData.append("portfolio_url", portfolio);
 
       const response = await fetch("/api/security-team-upload", {
         method: "POST",
@@ -122,276 +140,247 @@ export default function SecurityTeamAdmin({
         throw new Error(data.error || "Upload failed");
       }
 
-      setMessage(`${data.member.name} was added to the Security Team.`);
+      setMessage("Image uploaded successfully.");
 
-      setImage(null);
-      setPreview("");
-      setName("");
-      setRole("");
-      setDescription("");
-      setGithub("");
-      setLinkedin("");
-      setPortfolio("");
-
-      const input = document.getElementById("security-member-image");
-
-      if (input) {
-        input.value = "";
-      }
+      clearSelectedImage();
+      await loadImages();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Upload failed");
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
-  };
+  }
 
-  const logout = async () => {
-    await fetch("/api/admin-logout", {
-      method: "POST",
-      credentials: "same-origin",
-    });
+  async function deleteImage(id) {
+    const confirmed = window.confirm(
+      "Delete this Security Team image permanently?"
+    );
 
-    setAuthenticated(false);
-
-    if (onLogout) {
-      onLogout();
+    if (!confirmed) {
+      return;
     }
-  };
+
+    setDeletingId(id);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        `/api/security-team-delete?id=${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+          credentials: "same-origin",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Delete failed");
+      }
+
+      setMembers((current) =>
+        current.filter((member) => member.id !== id)
+      );
+
+      setMessage("Image deleted successfully.");
+    } catch (err) {
+      setError(err.message || "Delete failed");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   if (!authenticated) {
-    return (
-      <main className="security-admin-page">
-        <div className="security-admin-shell security-admin-login">
-          <div className="security-admin-brand">
-            <ShieldCheck size={22} />
-            <span>SECURITY NETWORK / ADMIN</span>
-          </div>
-
-          <div className="security-admin-login-panel">
-            <div className="security-admin-icon">
-              <LogIn size={25} />
-            </div>
-
-            <span className="security-admin-eyebrow">
-              RESTRICTED ACCESS
-            </span>
-
-            <h1>Security Team Admin</h1>
-
-            <p>
-              Authorized access only. Sign in to add members and upload
-              security network profile images.
-            </p>
-
-            <form onSubmit={login}>
-              <label htmlFor="admin-password">ADMIN PASSWORD</label>
-
-              <input
-                id="admin-password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
-                required
-              />
-
-              {error && (
-                <div className="security-admin-error">
-                  {error}
-                </div>
-              )}
-
-              <button
-                className="security-admin-submit"
-                type="submit"
-                disabled={loading}
-              >
-                <LogIn size={17} />
-                {loading ? "AUTHENTICATING..." : "SIGN IN"}
-              </button>
-            </form>
-
-            <a className="security-admin-back" href="/">
-              <ArrowLeft size={15} />
-              Back to portfolio
-            </a>
-          </div>
-        </div>
-      </main>
-    );
+    return null;
   }
 
   return (
     <main className="security-admin-page">
       <div className="security-admin-shell">
         <header className="security-admin-header">
-          <div>
-            <div className="security-admin-brand">
-              <ShieldCheck size={22} />
-              <span>SECURITY NETWORK / ADMIN</span>
+          <div className="security-admin-heading">
+            <div className="security-admin-icon">
+              <ShieldCheck size={24} />
             </div>
 
-            <h1>Add Security Team Member</h1>
-
-            <p>
-              Upload a colleague's profile image and add their public
-              professional information to the Security Network.
-            </p>
+            <div>
+              <span>RESTRICTED AREA</span>
+              <h1>Security Team Admin</h1>
+              <p>
+                Upload and manage the images displayed on the Security Team.
+              </p>
+            </div>
           </div>
 
           <button
-            className="security-admin-logout"
             type="button"
-            onClick={logout}
+            className="security-admin-logout"
+            onClick={onLogout}
           >
-            <LogOut size={16} />
-            LOG OUT
+            <LogOut size={17} />
+            Logout
           </button>
         </header>
 
-        <form
-          className="security-admin-form"
-          onSubmit={uploadMember}
-        >
-          <section className="security-admin-upload">
-            <div className="security-admin-section-heading">
-              <UserPlus size={18} />
-              <div>
-                <span>NEW MEMBER</span>
-                <h2>Profile information</h2>
-              </div>
-            </div>
+        {message && (
+          <div className="security-admin-message success">
+            <CheckCircle2 size={18} />
+            {message}
+          </div>
+        )}
 
-            <div className="security-admin-image-area">
+        {error && (
+          <div className="security-admin-message error">
+            {error}
+          </div>
+        )}
+
+        <section className="security-admin-upload-card">
+          <div className="security-admin-section-heading">
+            <div>
+              <span>01 / MEDIA</span>
+              <h2>Upload team image</h2>
+              <p>
+                Add a JPG, PNG or WebP image up to 5 MB.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={uploadImage}>
+            <input
+              ref={fileInputRef}
+              id="security-member-image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={selectImage}
+              hidden
+            />
+
+            {!preview ? (
+              <button
+                type="button"
+                className="security-admin-dropzone"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImagePlus size={34} />
+                <strong>Choose an image</strong>
+                <span>JPG, PNG or WebP · Maximum 5 MB</span>
+              </button>
+            ) : (
               <div className="security-admin-preview">
-                {preview ? (
-                  <img src={preview} alt="Selected member preview" />
+                <img src={preview} alt="Selected team member" />
+
+                <button
+                  type="button"
+                  className="security-admin-clear"
+                  onClick={clearSelectedImage}
+                  aria-label="Remove selected image"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            )}
+
+            <div className="security-admin-upload-actions">
+              <button
+                type="button"
+                className="security-admin-secondary"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImagePlus size={17} />
+                Select Image
+              </button>
+
+              <button
+                type="submit"
+                className="security-admin-primary"
+                disabled={!image || uploading}
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 size={17} className="security-admin-spin" />
+                    Uploading...
+                  </>
                 ) : (
-                  <div>
-                    <ImagePlus size={30} />
-                    <span>NO IMAGE</span>
-                  </div>
+                  <>
+                    <Upload size={17} />
+                    Upload Image
+                  </>
                 )}
-              </div>
+              </button>
+            </div>
+          </form>
+        </section>
 
-              <div className="security-admin-file">
-                <label htmlFor="security-member-image">
-                  <Upload size={17} />
-                  Choose profile image
-                </label>
-
-                <input
-                  id="security-member-image"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={selectImage}
-                />
-
-                <small>
-                  JPG, PNG or WebP · Maximum 5 MB
-                </small>
-              </div>
+        <section className="security-admin-gallery">
+          <div className="security-admin-section-heading">
+            <div>
+              <span>02 / MANAGE</span>
+              <h2>Current team images</h2>
+              <p>
+                Images currently stored in the Security Team.
+              </p>
             </div>
 
-            <div className="security-admin-fields">
-              <label>
-                <span>NAME *</span>
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="e.g. Sang"
-                  maxLength={120}
-                  required
-                />
-              </label>
+            <strong className="security-admin-count">
+              {members.length} {members.length === 1 ? "IMAGE" : "IMAGES"}
+            </strong>
+          </div>
 
-              <label>
-                <span>ROLE / FOCUS *</span>
-                <input
-                  value={role}
-                  onChange={(event) => setRole(event.target.value)}
-                  placeholder="e.g. Cybersecurity Professional"
-                  maxLength={160}
-                  required
-                />
-              </label>
-
-              <label className="full">
-                <span>DESCRIPTION</span>
-                <textarea
-                  value={description}
-                  onChange={(event) =>
-                    setDescription(event.target.value)
-                  }
-                  placeholder="Short professional introduction..."
-                  maxLength={1000}
-                  rows={5}
-                />
-              </label>
-
-              <label>
-                <span>GITHUB</span>
-                <input
-                  type="url"
-                  value={github}
-                  onChange={(event) => setGithub(event.target.value)}
-                  placeholder="https://github.com/..."
-                />
-              </label>
-
-              <label>
-                <span>LINKEDIN</span>
-                <input
-                  type="url"
-                  value={linkedin}
-                  onChange={(event) =>
-                    setLinkedin(event.target.value)
-                  }
-                  placeholder="https://linkedin.com/in/..."
-                />
-              </label>
-
-              <label className="full">
-                <span>PORTFOLIO</span>
-                <input
-                  type="url"
-                  value={portfolio}
-                  onChange={(event) =>
-                    setPortfolio(event.target.value)
-                  }
-                  placeholder="https://..."
-                />
-              </label>
+          {loadingMembers ? (
+            <div className="security-admin-empty">
+              <Loader2 size={22} className="security-admin-spin" />
+              Loading images...
             </div>
+          ) : members.length === 0 ? (
+            <div className="security-admin-empty">
+              No team images have been uploaded yet.
+            </div>
+          ) : (
+            <div className="security-admin-grid">
+              {members.map((member) => (
+                <article
+                  className="security-admin-image-card"
+                  key={member.id}
+                >
+                  <div className="security-admin-image-wrapper">
+                    <img
+                      src={member.image_url}
+                      alt="Security Team member"
+                    />
 
-            {error && (
-              <div className="security-admin-error">
-                {error}
-              </div>
-            )}
+                    <button
+                      type="button"
+                      className="security-admin-delete"
+                      onClick={() => deleteImage(member.id)}
+                      disabled={deletingId === member.id}
+                      aria-label="Delete image"
+                    >
+                      {deletingId === member.id ? (
+                        <Loader2
+                          size={18}
+                          className="security-admin-spin"
+                        />
+                      ) : (
+                        <Trash2 size={18} />
+                      )}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
 
-            {message && (
-              <div className="security-admin-success">
-                <CheckCircle2 size={18} />
-                {message}
-              </div>
-            )}
-
-            <button
-              className="security-admin-save"
-              type="submit"
-              disabled={loading}
-            >
-              <Upload size={17} />
-              {loading ? "UPLOADING..." : "UPLOAD & ADD MEMBER"}
-            </button>
-          </section>
-        </form>
-
-        <a className="security-admin-back" href="/">
-          <ArrowLeft size={15} />
-          Return to portfolio
-        </a>
+        <button
+          type="button"
+          className="security-admin-back"
+          onClick={onLogout}
+        >
+          <ArrowLeft size={17} />
+          Back to Security Team
+        </button>
       </div>
     </main>
   );
