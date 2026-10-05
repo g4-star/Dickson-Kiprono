@@ -1,0 +1,778 @@
+import { useEffect, useState } from "react";
+import {
+  ArrowUpRight,
+  ChevronRight,
+  Code2,
+  Cpu,
+  Database,
+  Download,
+  ExternalLink,
+  Globe,
+  Layers3,
+  LockKeyhole,
+  Menu,
+  Moon,
+  Network,
+  Server,
+  ShieldCheck,
+  Smartphone,
+  Sun,
+  Terminal,
+  X,
+  Zap,
+} from "lucide-react";
+
+import { portfolio } from "./data/portfolio";
+import "./App.css";
+
+const navItems = [
+  ["home", "Home"],
+  ["about", "About"],
+  ["work", "Work"],
+  ["security", "Security"],
+  ["stack", "Stack"],
+  ["journey", "Journey"],
+  ["services", "Services"],
+  ["contact", "Contact"],
+];
+
+const capabilities = [
+  {
+    icon: ShieldCheck,
+    title: "Cybersecurity",
+    text: "Security-focused thinking across Linux environments, networking, defensive concepts, system hardening, digital investigations and practical security labs.",
+  },
+  {
+    icon: Code2,
+    title: "Software Development",
+    text: "Building applications from idea to working product using modern frontend, backend and database technologies.",
+  },
+  {
+    icon: Smartphone,
+    title: "Mobile Development",
+    text: "Developing Flutter applications with real backend integrations, authentication, data management, notifications and responsive interfaces.",
+  },
+  {
+    icon: Globe,
+    title: "Web Development",
+    text: "Creating responsive websites and web applications with React, Vite, JavaScript and modern deployment workflows.",
+  },
+  {
+    icon: Zap,
+    title: "Automation & AI",
+    text: "Exploring automation systems that reduce repetitive work while keeping workflows structured, transparent and controllable.",
+  },
+];
+
+const securityAreas = [
+  "Network security fundamentals",
+  "Linux security and administration",
+  "Zero Trust concepts",
+  "Micro-segmentation",
+  "Digital forensics",
+  "Security monitoring concepts",
+  "Threat awareness",
+  "System hardening",
+  "Security documentation",
+  "Practical cybersecurity labs",
+];
+
+const learning = [
+  {
+    title: "Moringa School",
+    text: "Cybersecurity training covering practical security concepts, technical labs, problem solving and collaborative project work.",
+  },
+  {
+    title: "TryHackMe",
+    text: "Hands-on security learning through guided rooms, practical challenges and security-focused environments.",
+  },
+  {
+    title: "Cisco",
+    text: "Networking and cybersecurity learning focused on foundational concepts and how systems communicate and are protected.",
+  },
+  {
+    title: "Hack The Box",
+    text: "Practical security experimentation and exposure to offensive security concepts through controlled environments.",
+  },
+];
+
+const workflow = [
+  ["01", "Understand", "Start with the actual problem, the people affected by it and the outcome the product should achieve."],
+  ["02", "Plan", "Break the problem into features, data requirements, technical dependencies and realistic milestones."],
+  ["03", "Build", "Implement the smallest useful version while keeping the architecture understandable and maintainable."],
+  ["04", "Test", "Test functionality, edge cases, connectivity, data flow and security assumptions before release."],
+  ["05", "Improve", "Use real feedback and observed failures to improve the product rather than treating the first release as finished."],
+];
+
+function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("portfolio-theme");
+    return saved ? saved === "dark" : true;
+  });
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? "dark" : "light";
+    localStorage.setItem("portfolio-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  const scrollTo = (id) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <div className="site">
+      <div className="noise" />
+
+      <nav className="navbar">
+        <div className="nav-inner">
+          <button className="brand" onClick={() => scrollTo("home")}>
+            <span className="brand-mark">DK</span>
+            <span className="brand-copy">
+              <strong>DICKSON</strong>
+              <small>SECURITY / SOFTWARE</small>
+            </span>
+          </button>
+
+          <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+            {navItems.map(([id, label]) => (
+              <button key={id} onClick={() => scrollTo(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="nav-actions">
+            <button
+              className="theme-btn"
+              aria-label="Toggle theme"
+              onClick={() => setDarkMode((value) => !value)}
+            >
+              {darkMode ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+
+            <button
+              className="menu-btn"
+              aria-label="Toggle menu"
+              onClick={() => setMenuOpen((value) => !value)}
+            >
+              {menuOpen ? <X size={21} /> : <Menu size={21} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main>
+        <section id="home" className="hero section">
+          <div className="container hero-grid">
+            <div className="hero-content">
+              <div className="eyebrow">
+                <span className="status-dot" />
+                Available for opportunities · Kenya / Remote
+              </div>
+
+              <p className="hero-kicker">CYBERSECURITY × SOFTWARE</p>
+
+              <h1>
+                Building <span>secure</span> technology for real-world
+                problems.
+              </h1>
+
+              <p className="hero-description">
+                I’m Dickson Kiprono, a cybersecurity and software developer
+                focused on turning practical problems into useful digital
+                products. I work across security, mobile development, web
+                applications, backend systems and automation.
+              </p>
+
+              <div className="hero-actions">
+                <button className="btn btn-primary" onClick={() => scrollTo("work")}>
+                  Explore my work
+                  <ArrowUpRight size={17} />
+                </button>
+
+                <button className="btn btn-secondary" onClick={() => scrollTo("contact")}>
+                  Let's connect
+                  <ChevronRight size={17} />
+                </button>
+              </div>
+
+              <div className="hero-socials">
+                <a href={portfolio.social.github} target="_blank" rel="noreferrer">
+                  <span className="social-brand">GH</span>
+                  GitHub
+                  <ExternalLink size={13} />
+                </a>
+
+                <a href={portfolio.social.linkedin} target="_blank" rel="noreferrer">
+                  <span className="social-brand">in</span>
+                  LinkedIn
+                  <ExternalLink size={13} />
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-terminal">
+              <div className="terminal-window">
+                <div className="terminal-top">
+                  <span />
+                  <span />
+                  <span />
+                  <small>trippie@portfolio</small>
+                </div>
+
+                <div className="terminal-body">
+                  <p>
+                    <b>trippie@parrot</b>:<i>~</i>$ whoami
+                  </p>
+                  <p className="terminal-output">dickson-kiprono</p>
+
+                  <p>
+                    <b>trippie@parrot</b>:<i>~</i>$ cat focus.txt
+                  </p>
+
+                  <div className="terminal-list">
+                    <span>→ cybersecurity</span>
+                    <span>→ software engineering</span>
+                    <span>→ mobile applications</span>
+                    <span>→ automation</span>
+                    <span>→ practical problem solving</span>
+                  </div>
+
+                  <p className="cursor-line">
+                    <b>trippie@parrot</b>:<i>~</i>$ <span className="cursor">█</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-bottom container">
+            {portfolio.stats.map((stat) => (
+              <div className="stat" key={stat.label}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="about" className="section section-border">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">01</span>
+              <div>
+                <p className="section-label">ABOUT</p>
+                <h2>Technology should solve something.</h2>
+              </div>
+            </div>
+
+            <div className="about-grid">
+              <div className="about-main">
+                <p className="lead">
+                  I approach technology from two connected perspectives:
+                  <strong> building systems</strong> and
+                  <strong> understanding how those systems can fail.</strong>
+                </p>
+
+                <p>
+                  My journey combines cybersecurity training with hands-on
+                  software development. Instead of keeping security and
+                  development separate, I try to carry security thinking into
+                  the way applications are designed, data is handled and
+                  products are deployed.
+                </p>
+
+                <p>
+                  I enjoy taking an idea that starts as a simple problem,
+                  breaking it into smaller technical pieces, building a
+                  working version and then improving it through testing and
+                  iteration. This approach has led me to build products across
+                  housing, job-search automation, web development and
+                  cybersecurity experimentation.
+                </p>
+
+                <p>
+                  I am especially interested in technology that can have a
+                  practical impact in Kenya and other markets where a good
+                  solution does not need to be complicated—it needs to be
+                  useful, reliable and accessible.
+                </p>
+              </div>
+
+              <div className="about-aside">
+                <div className="profile-panel">
+                  <div className="profile-initials">DK</div>
+                  <div>
+                    <span>Based in</span>
+                    <strong>Kenya</strong>
+                  </div>
+                  <div>
+                    <span>Focus</span>
+                    <strong>Security + Software</strong>
+                  </div>
+                  <div>
+                    <span>Work style</span>
+                    <strong>Build · Test · Improve</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="principles">
+              <div>
+                <span>01</span>
+                <h3>Practical</h3>
+                <p>Build around real user problems rather than technology for its own sake.</p>
+              </div>
+              <div>
+                <span>02</span>
+                <h3>Security-minded</h3>
+                <p>Think about data, access, trust and failure cases throughout development.</p>
+              </div>
+              <div>
+                <span>03</span>
+                <h3>Curious</h3>
+                <p>Learn by experimenting, testing systems and investigating how things work.</p>
+              </div>
+              <div>
+                <span>04</span>
+                <h3>Iterative</h3>
+                <p>Release useful versions, learn from them and continue improving.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="work" className="section section-alt">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">02</span>
+              <div>
+                <p className="section-label">WHAT I BUILD</p>
+                <h2>From security labs to working products.</h2>
+              </div>
+            </div>
+
+            <div className="capability-grid">
+              {capabilities.map(({ icon: Icon, title, text }) => (
+                <article className="capability" key={title}>
+                  <div className="capability-icon">
+                    <Icon size={20} />
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                  <span className="capability-line" />
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">03</span>
+              <div>
+                <p className="section-label">SELECTED WORK</p>
+                <h2>Projects built around actual problems.</h2>
+              </div>
+            </div>
+
+            <div className="projects">
+              {portfolio.projects.map((project) => (
+                <article className="project" key={project.id}>
+                  <div className="project-number">{project.number}</div>
+
+                  <div className="project-content">
+                    <div className="project-meta">
+                      <span>{project.type}</span>
+                      <span>CASE STUDY</span>
+                    </div>
+
+                    <h3>{project.name}</h3>
+                    <p className="project-description">{project.description}</p>
+
+                    <p className="project-details">{project.details}</p>
+
+                    <div className="project-columns">
+                      <div>
+                        <span className="mini-label">TECHNOLOGIES</span>
+                        <div className="tag-list">
+                          {project.technologies.map((tech) => (
+                            <span key={tech}>{tech}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="mini-label">KEY FEATURES</span>
+                        <ul className="feature-list">
+                          {project.features?.map((feature) => (
+                            <li key={feature}>{feature}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="project-links">
+                      {project.github && (
+                        <a href={project.github} target="_blank" rel="noreferrer">
+                          <span className="social-brand">GH</span>
+                          Source code
+                        </a>
+                      )}
+
+                      {project.live && (
+                        <a href={project.live} target="_blank" rel="noreferrer">
+                          <Globe size={16} />
+                          Live project
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="security" className="section section-alt">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">04</span>
+              <div>
+                <p className="section-label">CYBERSECURITY</p>
+                <h2>Security is part of how I think.</h2>
+              </div>
+            </div>
+
+            <div className="security-grid">
+              <div className="security-copy">
+                <p className="lead">
+                  My cybersecurity work is centered on understanding systems,
+                  identifying weaknesses and thinking about how they can be
+                  protected.
+                </p>
+
+                <p>
+                  Through structured training and practical labs, I have worked
+                  with concepts involving networks, Linux systems, Zero Trust,
+                  micro-segmentation, digital forensics and security
+                  investigation.
+                </p>
+
+                <p>
+                  I document practical work because the ability to explain what
+                  happened, why it happened and how it was investigated is just
+                  as important as performing the technical task itself.
+                </p>
+
+                <button className="text-link" onClick={() => scrollTo("reports")}>
+                  View cybersecurity lab reports
+                  <ArrowUpRight size={16} />
+                </button>
+              </div>
+
+              <div className="security-matrix">
+                {securityAreas.map((area, index) => (
+                  <div key={area}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{area}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="reports" className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">05</span>
+              <div>
+                <p className="section-label">LAB REPORTS</p>
+                <h2>Evidence-backed cybersecurity learning.</h2>
+              </div>
+            </div>
+
+            <div className="reports-placeholder">
+              <div className="report-icon">
+                <Terminal size={24} />
+              </div>
+              <div>
+                <p className="mini-label">CYBERSECURITY DOCUMENTATION</p>
+                <h3>Lab reports will live here.</h3>
+                <p>
+                  This section is prepared for structured cybersecurity lab
+                  reports, investigation write-ups, screenshots, evidence and
+                  downloadable PDF documentation. The storage layer will be
+                  connected after the public website is complete.
+                </p>
+              </div>
+              <span className="coming">STORAGE READYING</span>
+            </div>
+
+            <div className="report-example">
+              <div>
+                <span className="report-category">ZERO TRUST / NETWORK SECURITY</span>
+                <h3>Implementing Micro-Segmentation in a Zero Trust Network</h3>
+                <p>
+                  A practical cybersecurity lab focused on network
+                  segmentation, trust boundaries and controlling communication
+                  between network zones.
+                </p>
+              </div>
+              <span className="report-status">DOCUMENT ARCHIVE</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="stack" className="section section-alt">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">06</span>
+              <div>
+                <p className="section-label">TECHNICAL STACK</p>
+                <h2>The tools behind the work.</h2>
+              </div>
+            </div>
+
+            <div className="stack-intro">
+              <p>
+                I don't treat a technology list as a collection of buzzwords.
+                The tools below represent technologies I have used while
+                building projects, completing technical exercises or developing
+                my understanding of modern software and security systems.
+              </p>
+            </div>
+
+            <div className="stack-grid">
+              <div className="stack-card">
+                <Code2 />
+                <h3>Languages</h3>
+                <p>JavaScript · Python · Dart · SQL · Bash</p>
+              </div>
+
+              <div className="stack-card">
+                <Layers3 />
+                <h3>Frontend</h3>
+                <p>React · Vite · Flutter · Responsive CSS</p>
+              </div>
+
+              <div className="stack-card">
+                <Server />
+                <h3>Backend</h3>
+                <p>FastAPI · SQLAlchemy · REST APIs · PostgreSQL</p>
+              </div>
+
+              <div className="stack-card">
+                <Database />
+                <h3>Data</h3>
+                <p>PostgreSQL · Neon · Supabase · Structured data models</p>
+              </div>
+
+              <div className="stack-card">
+                <LockKeyhole />
+                <h3>Security</h3>
+                <p>Linux · Networking · Zero Trust · Security labs</p>
+              </div>
+
+              <div className="stack-card">
+                <Cpu />
+                <h3>Infrastructure</h3>
+                <p>Docker · Git · Vercel · Linux environments</p>
+              </div>
+            </div>
+
+            <div className="technology-cloud">
+              {portfolio.technologies.map((tech) => (
+                <span key={tech}>{tech}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="journey" className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">07</span>
+              <div>
+                <p className="section-label">LEARNING JOURNEY</p>
+                <h2>Learning by doing.</h2>
+              </div>
+            </div>
+
+            <div className="journey-grid">
+              {learning.map((item, index) => (
+                <article className="learning-card" key={item.title}>
+                  <span>0{index + 1}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-alt">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">08</span>
+              <div>
+                <p className="section-label">DEVELOPMENT PROCESS</p>
+                <h2>How I approach a new problem.</h2>
+              </div>
+            </div>
+
+            <div className="workflow">
+              {workflow.map(([number, title, text]) => (
+                <article key={number}>
+                  <span>{number}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="services" className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-number">09</span>
+              <div>
+                <p className="section-label">SERVICES & COLLABORATION</p>
+                <h2>Technology work with a practical outcome.</h2>
+              </div>
+            </div>
+
+            <div className="services-grid">
+              <article>
+                <Globe />
+                <h3>Websites</h3>
+                <p>
+                  Responsive business, personal and product websites with
+                  clear structure, modern interfaces and deployment-ready
+                  architecture.
+                </p>
+              </article>
+
+              <article>
+                <Smartphone />
+                <h3>Mobile Applications</h3>
+                <p>
+                  Flutter applications connected to real backend services,
+                  databases, authentication and notification systems.
+                </p>
+              </article>
+
+              <article>
+                <Zap />
+                <h3>Automation</h3>
+                <p>
+                  Practical automation tools designed to organize repetitive
+                  workflows and reduce unnecessary manual work.
+                </p>
+              </article>
+
+              <article>
+                <ShieldCheck />
+                <h3>Security-Focused Development</h3>
+                <p>
+                  Development with attention to access control, data handling,
+                  trust boundaries, system behavior and security assumptions.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-alt">
+          <div className="container">
+            <div className="focus-panel">
+              <div>
+                <span className="section-label">CURRENT FOCUS</span>
+                <h2>Build. Learn. Ship.</h2>
+                <p>
+                  My current goal is to move beyond learning technology in
+                  isolation and consistently turn those skills into useful
+                  products, stronger security work and opportunities to
+                  collaborate with real teams.
+                </p>
+              </div>
+
+              <div className="focus-list">
+                <span><Network size={15} /> Cybersecurity opportunities</span>
+                <span><Code2 size={15} /> Product development</span>
+                <span><Terminal size={15} /> Practical security labs</span>
+                <span><Zap size={15} /> Automation experiments</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="section contact-section">
+          <div className="container">
+            <div className="contact-box">
+              <span className="section-label">10 · CONTACT</span>
+              <h2>Have a problem worth building for?</h2>
+              <p>
+                I'm interested in cybersecurity opportunities, software
+                projects, collaborations, internships and practical ideas that
+                can become useful products.
+              </p>
+
+              <div className="contact-actions">
+                <a
+                  className="btn btn-primary"
+                  href={portfolio.social.github}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="social-brand">GH</span>
+                  GitHub
+                </a>
+
+                <a
+                  className="btn btn-secondary"
+                  href={portfolio.social.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn
+                  <ExternalLink size={16} />
+                </a>
+
+                <a className="btn btn-secondary" href="/Dickson-Kiprono-CV.pdf">
+                  <Download size={17} />
+                  View CV
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="container footer-inner">
+          <div>
+            <strong>DICKSON KIPRONO</strong>
+            <span>Cybersecurity & Software Developer</span>
+          </div>
+
+          <div className="footer-right">
+            <span>Built with React</span>
+            <span>© {new Date().getFullYear()}</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default App;

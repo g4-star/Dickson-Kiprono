@@ -1,0 +1,22 @@
+export const portfolio = {
+  name: "Dickson Kiprono",
+  shortName: "Dickson",
+  title: "Cybersecurity & Software Developer",
+  tagline:
+    "I build secure digital products, useful applications, and automation systems.",
+  location: "Kenya",
+
+  social: {
+    github: "https://github.com/g4-star",
+    linkedin: "https://linkedin.com/in/dickson-sang-265737386",
+    portfolio: "https://dickson-kiprono-portfolio.vercel.app/",
+    email: "mailto:your-email@example.com",
+  },
+
+  stats: [
+    { value: "03+", label: "Major Projects" },
+    { value: "10+", label: "Technologies" },
+    { value: "04+", label: "Learning Platforms" },
+    { value: "∞", label: "Ideas to Build" },
+  ],
+};

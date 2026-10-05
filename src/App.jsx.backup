@@ -1,0 +1,800 @@
+import { useEffect, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Check,
+  Code2,
+  Download,
+  ExternalLink,
+  Mail,
+  Menu,
+  Moon,
+  Network,
+  Shield,
+  Smartphone,
+  Sparkles,
+  Sun,
+  Terminal,
+  X,
+} from "lucide-react";
+import { portfolio } from "./data/portfolio";
+import "./App.css";
+
+const navItems = [
+  ["home", "Home"],
+  ["about", "About"],
+  ["milestones", "Milestones"],
+  ["services", "Services"],
+  ["skills", "Skills"],
+  ["certifications", "Certifications"],
+  ["projects", "Projects"],
+  ["journey", "Journey"],
+  ["others", "Others"],
+  ["contact", "Contact"],
+];
+
+const services = [
+  {
+    number: "01",
+    icon: Shield,
+    title: "Cybersecurity",
+    description:
+      "Security-focused work across reconnaissance, vulnerability assessment, Linux environments, network analysis and practical security labs.",
+    tags: ["Security", "Linux", "Networking"],
+  },
+  {
+    number: "02",
+    icon: Code2,
+    title: "Web Development",
+    description:
+      "Modern responsive web experiences using React, JavaScript and clean component-driven architecture.",
+    tags: ["React", "JavaScript", "Vite"],
+  },
+  {
+    number: "03",
+    icon: Smartphone,
+    title: "Mobile Development",
+    description:
+      "Cross-platform Flutter applications designed around real problems, practical workflows and scalable backends.",
+    tags: ["Flutter", "Dart", "Supabase"],
+  },
+  {
+    number: "04",
+    icon: Sparkles,
+    title: "Automation & AI",
+    description:
+      "Automation systems that connect APIs, data, matching logic and user interfaces to reduce repetitive work.",
+    tags: ["Python", "FastAPI", "AI"],
+  },
+];
+
+const skills = {
+  Cybersecurity: [
+    "Linux",
+    "Nmap",
+    "Burp Suite",
+    "Wireshark",
+    "Metasploit",
+    "Web Security",
+    "Network Security",
+    "Reconnaissance",
+  ],
+  Development: [
+    "Python",
+    "JavaScript",
+    "React",
+    "Flutter",
+    "Dart",
+    "HTML",
+    "CSS",
+    "REST APIs",
+  ],
+  "Data & Backend": [
+    "SQL",
+    "PostgreSQL",
+    "Supabase",
+    "FastAPI",
+    "SQLAlchemy",
+    "Firebase",
+  ],
+  "Tools & Platforms": [
+    "Git",
+    "GitHub",
+    "Docker",
+    "VS Code",
+    "Android Studio",
+    "TryHackMe",
+    "Hack The Box",
+    "Cisco",
+  ],
+};
+
+const certifications = [
+  {
+    code: "01",
+    title: "Introduction to Cybersecurity",
+    issuer: "Moringa School",
+    description:
+      "Cybersecurity foundations covering security concepts, threats, defensive thinking and practical security learning.",
+  },
+  {
+    code: "02",
+    title: "Cybersecurity Learning",
+    issuer: "Cisco",
+    description:
+      "Structured cybersecurity learning covering core concepts and the foundations of secure digital environments.",
+  },
+  {
+    code: "03",
+    title: "Hands-on Security Labs",
+    issuer: "TryHackMe",
+    description:
+      "Practical security learning through guided rooms, challenges, reconnaissance and defensive/offensive concepts.",
+  },
+  {
+    code: "04",
+    title: "Practical Security Labs",
+    issuer: "Hack The Box",
+    description:
+      "Hands-on exposure to realistic security challenges and practical penetration-testing methodology.",
+  },
+];
+
+const projects = [
+  {
+    featured: true,
+    category: "MOBILE APP",
+    title: "JUMAA",
+    subtitle: "Find. Connect. Move.",
+    description:
+      "A Flutter mobile rental marketplace built around the idea of making it easier for people to discover apartments and rental homes at a more practical local level.",
+    stack: ["Flutter", "Dart", "Supabase", "Firebase"],
+    link: "https://github.com/g4-star/Jumaa-",
+    accent: "project-dark",
+  },
+  {
+    category: "WEB PLATFORM",
+    title: "JUMAA Web",
+    subtitle: "The public digital experience.",
+    description:
+      "A separate marketing website for JUMAA focused on the product story, discoverability, SEO and directing users toward the mobile application.",
+    stack: ["React", "Vite", "JavaScript", "Vercel"],
+    link: "https://jumaaweb.vercel.app/",
+    accent: "project-light",
+  },
+  {
+    category: "AUTOMATION",
+    title: "TrippieAutoAI",
+    subtitle: "Job discovery & automation.",
+    description:
+      "An automation platform combining a Flutter control dashboard with a FastAPI backend for job discovery, matching, application workflows and automation controls.",
+    stack: ["Flutter", "FastAPI", "Python", "PostgreSQL"],
+    link: "https://dickson-auto-ai.vercel.app/",
+    accent: "project-blue",
+  },
+];
+
+const milestones = [
+  {
+    year: "01",
+    title: "Cybersecurity",
+    text: "Built a foundation through structured cybersecurity training and practical security labs.",
+    detail: "Security mindset",
+  },
+  {
+    year: "02",
+    title: "Moringa School",
+    text: "Expanded from cybersecurity concepts into practical software development and technical problem solving.",
+    detail: "Learning → building",
+  },
+  {
+    year: "03",
+    title: "JUMAA",
+    text: "Turned a real-world housing problem into a working Flutter application backed by Supabase.",
+    detail: "Product development",
+  },
+  {
+    year: "04",
+    title: "Automation",
+    text: "Started building systems that connect APIs, matching logic, backend services and dashboards.",
+    detail: "TrippieAutoAI",
+  },
+];
+
+const journey = [
+  {
+    date: "FOUNDATION",
+    title: "Learning the fundamentals",
+    text: "Started building a strong technical foundation around computing, Linux, networking and cybersecurity.",
+  },
+  {
+    date: "CYBERSECURITY",
+    title: "Security became a focus",
+    text: "Moved deeper into cybersecurity through Moringa School, Cisco, TryHackMe and Hack The Box.",
+  },
+  {
+    date: "BUILDING",
+    title: "Turning ideas into products",
+    text: "Started moving beyond tutorials and labs by designing and shipping applications that solve practical problems.",
+  },
+  {
+    date: "NOW",
+    title: "Build. Learn. Ship.",
+    text: "Focused on creating useful software, growing professionally and turning technical skills into sustainable opportunities.",
+  },
+];
+
+function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("portfolio-theme");
+    if (saved) return saved === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSkill, setActiveSkill] = useState("Cybersecurity");
+  const [activeMilestone, setActiveMilestone] = useState(0);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? "dark" : "light";
+    localStorage.setItem("portfolio-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  const scrollTo = (id) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  return (
+    <div className="site">
+      <nav className="navbar">
+        <div className="nav-inner">
+          <button className="brand" onClick={() => scrollTo("home")}>
+            <span className="brand-mark">DK</span>
+            <span>
+              <strong>DICKSON</strong>
+              <small>SECURITY / SOFTWARE</small>
+            </span>
+          </button>
+
+          <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+            {navItems.map(([id, label]) => (
+              <button key={id} onClick={() => scrollTo(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="nav-actions">
+            <button
+              className="theme-btn"
+              aria-label="Toggle theme"
+              onClick={() => setDarkMode((value) => !value)}
+            >
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            <button
+              className="menu-btn"
+              aria-label="Open menu"
+              onClick={() => setMenuOpen((value) => !value)}
+            >
+              {menuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main>
+        {/* HERO */}
+        <section id="home" className="hero section">
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <div className="eyebrow">
+                <span className="pulse" />
+                AVAILABLE FOR OPPORTUNITIES
+              </div>
+
+              <h1>
+                Building <em>secure</em>
+                <br />
+                digital experiences.
+              </h1>
+
+              <p className="hero-description">
+                I&apos;m <strong>{portfolio.name}</strong> — a cybersecurity
+                learner and software developer focused on turning real-world
+                problems into useful digital products.
+              </p>
+
+              <div className="hero-buttons">
+                <button className="btn btn-primary" onClick={() => scrollTo("projects")}>
+                  Explore my work <ArrowUpRight size={18} />
+                </button>
+
+                <button className="btn btn-outline" onClick={() => scrollTo("contact")}>
+                  Let&apos;s connect <ArrowDown size={17} />
+                </button>
+              </div>
+
+              <div className="hero-socials">
+                <a href={portfolio.social.github} target="_blank" rel="noreferrer">
+                  <span className="social-brand">GH</span> GitHub
+                </a>
+                <a href={portfolio.social.linkedin} target="_blank" rel="noreferrer">
+                  <span className="social-brand">in</span> LinkedIn
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-visual">
+              <div className="visual-grid" />
+              <div className="profile-frame">
+                <div className="profile-placeholder">
+                  <div className="profile-initials">DK</div>
+                  <span>PROFILE / 01</span>
+                </div>
+                <div className="profile-caption">
+                  <span>KENYA</span>
+                  <span>CYBER × SOFTWARE</span>
+                </div>
+              </div>
+
+              <div className="floating-card card-one">
+                <Terminal size={17} />
+                <div>
+                  <small>FOCUS</small>
+                  <strong>Cybersecurity</strong>
+                </div>
+              </div>
+
+              <div className="floating-card card-two">
+                <Network size={17} />
+                <div>
+                  <small>BUILDING</small>
+                  <strong>Real Products</strong>
+                </div>
+              </div>
+
+              <div className="visual-code">
+                <span>01</span>
+                <span>secure()</span>
+                <span>build()</span>
+                <span>ship()</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="scroll-indicator">
+            <span>SCROLL TO EXPLORE</span>
+            <ArrowDown size={15} />
+          </div>
+        </section>
+
+        {/* STATS */}
+        <section className="stats-strip">
+          {portfolio.stats.map((stat) => (
+            <div className="stat" key={stat.label}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+          <div className="stat stat-wide">
+            <strong>KENYA</strong>
+            <span>Based in East Africa · Open to opportunities</span>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section id="about" className="section about">
+          <div className="section-heading">
+            <span className="section-number">01 / ABOUT</span>
+            <h2>Curiosity turned into code.</h2>
+          </div>
+
+          <div className="about-grid">
+            <div className="about-lead">
+              <p className="large-copy">
+                I&apos;m interested in the intersection between{" "}
+                <span>security</span>, <span>software</span> and{" "}
+                <span>real-world problems</span>.
+              </p>
+
+              <p>
+                My journey has taken me from learning cybersecurity and Linux
+                environments to building complete applications with mobile
+                interfaces, backend services, databases and cloud deployments.
+              </p>
+
+              <p>
+                I enjoy understanding how systems work, finding where they can
+                be improved, and then actually building the solution.
+              </p>
+
+              <button className="text-link" onClick={() => scrollTo("journey")}>
+                See my journey <ArrowUpRight size={17} />
+              </button>
+            </div>
+
+            <div className="about-panel">
+              <div className="panel-label">CURRENTLY FOCUSED ON</div>
+              <ul>
+                <li>
+                  <Check size={16} />
+                  Cybersecurity & security engineering
+                </li>
+                <li>
+                  <Check size={16} />
+                  Full-stack application development
+                </li>
+                <li>
+                  <Check size={16} />
+                  Flutter mobile products
+                </li>
+                <li>
+                  <Check size={16} />
+                  Automation & AI-powered workflows
+                </li>
+              </ul>
+
+              <div className="about-note">
+                <span>01</span>
+                <p>
+                  The goal isn&apos;t just to write code. It&apos;s to build
+                  something that people can actually use.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* MILESTONES */}
+        <section id="milestones" className="section dark-section">
+          <div className="section-heading light-heading">
+            <span className="section-number">02 / MILESTONES</span>
+            <h2>A journey of building.</h2>
+          </div>
+
+          <div className="milestone-layout">
+            <div className="milestone-list">
+              {milestones.map((item, index) => (
+                <button
+                  key={item.title}
+                  className={`milestone-item ${
+                    activeMilestone === index ? "active" : ""
+                  }`}
+                  onClick={() => setActiveMilestone(index)}
+                >
+                  <span>{item.year}</span>
+                  <strong>{item.title}</strong>
+                  <ArrowUpRight size={18} />
+                </button>
+              ))}
+            </div>
+
+            <div className="milestone-detail">
+              <span className="detail-number">
+                {milestones[activeMilestone].year}
+              </span>
+              <div>
+                <small>{milestones[activeMilestone].detail}</small>
+                <h3>{milestones[activeMilestone].title}</h3>
+                <p>{milestones[activeMilestone].text}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SERVICES */}
+        <section id="services" className="section">
+          <div className="section-heading">
+            <span className="section-number">03 / SERVICES</span>
+            <h2>What I can build.</h2>
+          </div>
+
+          <div className="services-grid">
+            {services.map((service) => {
+              const Icon = service.icon;
+              return (
+                <article className="service-card" key={service.number}>
+                  <div className="service-top">
+                    <span>{service.number}</span>
+                    <Icon size={25} strokeWidth={1.5} />
+                  </div>
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
+                  <div className="tag-row">
+                    {service.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* SKILLS */}
+        <section id="skills" className="section skills-section">
+          <div className="section-heading">
+            <span className="section-number">04 / SKILLS</span>
+            <h2>Tools I work with.</h2>
+          </div>
+
+          <div className="skills-layout">
+            <div className="skill-tabs">
+              {Object.keys(skills).map((category) => (
+                <button
+                  key={category}
+                  className={activeSkill === category ? "active" : ""}
+                  onClick={() => setActiveSkill(category)}
+                >
+                  <span>+</span>
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            <div className="skill-content">
+              <div className="skill-content-head">
+                <span>TECHNICAL STACK</span>
+                <strong>{activeSkill}</strong>
+              </div>
+
+              <div className="skill-cloud">
+                {skills[activeSkill].map((skill, index) => (
+                  <div className="skill-pill" key={skill}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CERTIFICATIONS */}
+        <section id="certifications" className="section certification-section">
+          <div className="section-heading">
+            <span className="section-number">05 / CERTIFICATIONS</span>
+            <h2>Learning never stops.</h2>
+          </div>
+
+          <div className="cert-grid">
+            {certifications.map((cert) => (
+              <article className="cert-card" key={cert.code}>
+                <div className="cert-code">{cert.code}</div>
+                <div>
+                  <span>{cert.issuer}</span>
+                  <h3>{cert.title}</h3>
+                  <p>{cert.description}</p>
+                </div>
+                <ArrowUpRight size={19} />
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* PROJECTS */}
+        <section id="projects" className="section projects-section">
+          <div className="section-heading">
+            <span className="section-number">06 / PROJECTS</span>
+            <h2>Ideas made real.</h2>
+            <p>
+              A selection of products and systems I&apos;ve designed,
+              developed or worked on.
+            </p>
+          </div>
+
+          <div className="projects-grid">
+            {projects.map((project, index) => (
+              <article
+                className={`project-card ${project.featured ? "featured" : ""}`}
+                key={project.title}
+              >
+                <div className={`project-visual ${project.accent}`}>
+                  <div className="project-topline">
+                    <span>{project.category}</span>
+                    <span>0{index + 1}</span>
+                  </div>
+
+                  <div className="project-mark">
+                    {project.title === "JUMAA" ? "J" : project.title === "JUMAA Web" ? "JW" : "TA"}
+                  </div>
+
+                  <div className="project-grid-lines" />
+                  <div className="project-corner">CASE / {String(index + 1).padStart(2, "0")}</div>
+                </div>
+
+                <div className="project-info">
+                  <div>
+                    <h3>{project.title}</h3>
+                    <strong>{project.subtitle}</strong>
+                  </div>
+                  <p>{project.description}</p>
+
+                  <div className="project-bottom">
+                    <div className="tag-row">
+                      {project.stack.map((item) => (
+                        <span key={item}>{item}</span>
+                      ))}
+                    </div>
+
+                    <a href={project.link} target="_blank" rel="noreferrer">
+                      View project <ExternalLink size={16} />
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* JOURNEY */}
+        <section id="journey" className="section journey-section">
+          <div className="section-heading">
+            <span className="section-number">07 / JOURNEY</span>
+            <h2>Still becoming.</h2>
+          </div>
+
+          <div className="journey-line">
+            {journey.map((item, index) => (
+              <article className="journey-item" key={item.date}>
+                <div className="journey-marker">{index + 1}</div>
+                <div className="journey-content">
+                  <span>{item.date}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* OTHERS */}
+        <section id="others" className="section dark-section others-section">
+          <div className="section-heading light-heading">
+            <span className="section-number">08 / OTHERS</span>
+            <h2>Beyond the projects.</h2>
+          </div>
+
+          <div className="others-grid">
+            <a
+              className="other-card"
+              href={portfolio.social.github}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="social-icon-text">GH</span>
+              <span>01</span>
+              <h3>GitHub</h3>
+              <p>Code, experiments, repositories and things currently being built.</p>
+              <ArrowUpRight size={18} />
+            </a>
+
+            <a
+              className="other-card"
+              href={portfolio.social.linkedin}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="social-icon-text">in</span>
+              <span>02</span>
+              <h3>LinkedIn</h3>
+              <p>Professional journey, opportunities and technical growth.</p>
+              <ArrowUpRight size={18} />
+            </a>
+
+            <div className="other-card">
+              <Terminal size={28} />
+              <span>03</span>
+              <h3>Linux</h3>
+              <p>Comfortable working in terminal-driven development environments.</p>
+              <ArrowUpRight size={18} />
+            </div>
+
+            <div className="other-card">
+              <Shield size={28} />
+              <span>04</span>
+              <h3>Security Mindset</h3>
+              <p>Think about how systems can fail, how they can be protected and how they can improve.</p>
+              <ArrowUpRight size={18} />
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT */}
+        <section id="contact" className="section contact-section">
+          <div className="contact-copy">
+            <span className="section-number">09 / CONTACT</span>
+            <h2>
+              Have an idea?
+              <br />
+              <em>Let&apos;s build it.</em>
+            </h2>
+            <p>
+              I&apos;m open to internships, junior opportunities, freelance
+              projects, collaborations and interesting products.
+            </p>
+
+            <div className="contact-links">
+              <a href={portfolio.social.linkedin} target="_blank" rel="noreferrer">
+                LinkedIn <ArrowUpRight size={17} />
+              </a>
+              <a href={portfolio.social.github} target="_blank" rel="noreferrer">
+                GitHub <ArrowUpRight size={17} />
+              </a>
+              <a href={portfolio.social.email}>
+                Email <Mail size={17} />
+              </a>
+            </div>
+          </div>
+
+          <div className="contact-card">
+            <div className="contact-card-top">
+              <span>LET&apos;S TALK</span>
+              <Mail size={22} />
+            </div>
+
+            <h3>Start a conversation.</h3>
+            <p>
+              Whether you&apos;re looking for someone to build with, learn
+              with, or solve a technical problem, I&apos;d be happy to hear
+              from you.
+            </p>
+
+            <a className="btn btn-primary full-btn" href={portfolio.social.email}>
+              Send an email <ArrowUpRight size={18} />
+            </a>
+
+            <a
+              className="cv-link"
+              href="/Dickson-Kiprono-CV.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Download size={16} />
+              View CV
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-main">
+          <div>
+            <div className="footer-brand">DICKSON KIPRONO<span>.</span></div>
+            <p>Cybersecurity × Software Development</p>
+          </div>
+
+          <div className="footer-links">
+            {navItems.slice(0, 5).map(([id, label]) => (
+              <button key={id} onClick={() => scrollTo(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="footer-social">
+            <a href={portfolio.social.github} target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            <a href={portfolio.social.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} Dickson Kiprono. All rights reserved.</span>
+          <span>BUILT WITH CURIOSITY + CODE</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
