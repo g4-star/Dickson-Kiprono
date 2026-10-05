@@ -1,0 +1,318 @@
+ .security-admin-page {
+  min-height: 100vh;
+  padding: 70px 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(99, 230, 165, .08), transparent 35%),
+    var(--bg);
+  color: var(--text);
+}
+
+.security-admin-shell {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.security-admin-login {
+  min-height: calc(100vh - 140px);
+  display: grid;
+  place-items: center;
+}
+
+.security-admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.security-admin-login-panel {
+  width: min(460px, 100%);
+  padding: 42px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.security-admin-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 25px;
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.security-admin-eyebrow,
+.security-admin-section-heading span {
+  color: var(--dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.security-admin-login-panel h1,
+.security-admin-header h1 {
+  margin: 10px 0 12px;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1.05;
+}
+
+.security-admin-login-panel p,
+.security-admin-header p {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.security-admin-login-panel form {
+  margin-top: 30px;
+}
+
+.security-admin-login-panel label,
+.security-admin-fields label span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.security-admin-login-panel input,
+.security-admin-fields input,
+.security-admin-fields textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 13px 14px;
+  outline: none;
+  font: inherit;
+}
+
+.security-admin-login-panel input:focus,
+.security-admin-fields input:focus,
+.security-admin-fields textarea:focus {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.security-admin-submit,
+.security-admin-save,
+.security-admin-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 13px 18px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.security-admin-submit {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.security-admin-submit:disabled,
+.security-admin-save:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.security-admin-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.security-admin-back:hover {
+  color: var(--accent);
+}
+
+.security-admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  padding-bottom: 35px;
+  border-bottom: 1px solid var(--border);
+}
+
+.security-admin-logout {
+  flex: 0 0 auto;
+  background: transparent;
+}
+
+.security-admin-form {
+  margin-top: 35px;
+}
+
+.security-admin-upload {
+  padding: 35px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+}
+
+.security-admin-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 30px;
+  color: var(--accent);
+}
+
+.security-admin-section-heading h2 {
+  margin: 5px 0 0;
+  color: var(--text);
+  font-size: 19px;
+}
+
+.security-admin-image-area {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 25px;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.security-admin-preview {
+  width: 210px;
+  height: 210px;
+  overflow: hidden;
+  border: 1px dashed var(--border-strong);
+  background: var(--panel-2);
+}
+
+.security-admin-preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.security-admin-preview > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+}
+
+.security-admin-file label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 17px;
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
+  background: var(--panel-2);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.security-admin-file input {
+  display: none;
+}
+
+.security-admin-file small {
+  display: block;
+  margin-top: 10px;
+  color: var(--dim);
+}
+
+.security-admin-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.security-admin-fields label.full {
+  grid-column: 1 / -1;
+}
+
+.security-admin-fields textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.security-admin-error,
+.security-admin-success {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 13px 15px;
+  border: 1px solid var(--border-strong);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+}
+
+.security-admin-error {
+  color: #ff8b8b;
+}
+
+.security-admin-success {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+
+.security-admin-save {
+  margin-top: 25px;
+}
+
+@media (max-width: 700px) {
+  .security-admin-page {
+    padding: 35px 16px;
+  }
+
+  .security-admin-login-panel,
+  .security-admin-upload {
+    padding: 24px;
+  }
+
+  .security-admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .security-admin-image-area,
+  .security-admin-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .security-admin-fields label.full {
+    grid-column: auto;
+  }
+
+  .security-admin-preview {
+    width: 180px;
+    height: 180px;
+  }
+}

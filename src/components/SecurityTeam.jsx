@@ -7,12 +7,18 @@ import {
   Users,
 } from "lucide-react";
 import "./SecurityTeam.css";
+import SecurityTeamAdmin from "./SecurityTeamAdmin";
 
 export default function SecurityTeam({ onBack }) {
   const [members, setMembers] = useState([]);
   const [activeMember, setActiveMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminError, setAdminError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +58,63 @@ export default function SecurityTeam({ onBack }) {
       cancelled = true;
     };
   }, []);
+
+  const openAdminLogin = () => {
+    setAdminError("");
+    setAdminPassword("");
+    setShowAdminLogin(true);
+  };
+
+  const loginToAdmin = async (event) => {
+    event.preventDefault();
+
+    setAdminLoading(true);
+    setAdminError("");
+
+    try {
+      const response = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          password: adminPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Access denied");
+      }
+
+      setAdminPassword("");
+      setShowAdminLogin(false);
+      setAdminLoading(false);
+      setAdminError("");
+      setShowAdminPanel(true);
+    } catch (err) {
+      setAdminError(err.message || "Access denied");
+      setAdminLoading(false);
+    }
+  };
+
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+
+  if (showAdminPanel) {
+    return (
+      <SecurityTeamAdmin
+        initialAuthenticated={true}
+        onLogout={() => {
+          setShowAdminPanel(false);
+          setShowAdminLogin(false);
+          setAdminPassword("");
+          setAdminError("");
+        }}
+      />
+    );
+  }
 
   const scrollingMembers =
     members.length > 1 ? [...members, ...members] : members;
@@ -192,6 +255,105 @@ export default function SecurityTeam({ onBack }) {
             </div>
           </div>
 
+          <div className="security-admin-gateway">
+            <button
+              type="button"
+              className="security-admin-profile"
+              onClick={openAdminLogin}
+            >
+              <div className="security-admin-profile-photo">
+                <img
+                  src="/src/assets/me.jpeg"
+                  alt="Dickson Kiprono"
+                />
+                <span>ADMIN</span>
+              </div>
+
+              <div className="security-admin-profile-copy">
+                <span>RESTRICTED PROFILE</span>
+                <strong>Dickson Kiprono</strong>
+                <small>CYBERSECURITY / NETWORK ADMINISTRATOR</small>
+                <em>
+                  Input password to view
+                  <ArrowUpRight size={14} />
+                </em>
+              </div>
+            </button>
+          </div>
+
+          {showAdminLogin && (
+            <div className="security-admin-gateway-overlay">
+              <div className="security-admin-gateway-panel">
+                <button
+                  type="button"
+                  className="security-admin-gateway-close"
+                  onClick={() => {
+                    setShowAdminLogin(false);
+                    setAdminPassword("");
+                    setAdminError("");
+                  }}
+                  aria-label="Close password panel"
+                >
+                  ×
+                </button>
+
+                <div className="security-admin-gateway-icon">
+                  <ShieldCheck size={28} />
+                </div>
+
+                <span className="security-admin-gateway-label">
+                  RESTRICTED SECURITY PROFILE
+                </span>
+
+                <h2>Input password to view</h2>
+
+                <p>
+                  This profile contains protected security network
+                  administration controls.
+                </p>
+
+                <form onSubmit={loginToAdmin}>
+                  <label htmlFor="security-gateway-password">
+                    ACCESS PASSWORD
+                  </label>
+
+                  <input
+                    id="security-gateway-password"
+                    type="password"
+                    value={adminPassword}
+                    onChange={(event) =>
+                      setAdminPassword(event.target.value)
+                    }
+                    autoComplete="current-password"
+                    autoFocus
+                    required
+                  />
+
+                  {adminError && (
+                    <div className="security-admin-gateway-error">
+                      {adminError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="security-admin-gateway-submit"
+                    disabled={adminLoading}
+                  >
+                    <ShieldCheck size={16} />
+                    {adminLoading
+                      ? "VERIFYING ACCESS..."
+                      : "ACCESS PROFILE"}
+                  </button>
+                </form>
+
+                <small className="security-admin-gateway-note">
+                  AUTHENTICATION IS VERIFIED BY THE SECURITY SERVER
+                </small>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="security-team-empty">
               <Terminal size={24} />
@@ -211,8 +373,9 @@ export default function SecurityTeam({ onBack }) {
               <Users size={24} />
               <strong>NETWORK READY</strong>
               <p>
-                Team members will appear here when profiles are added
-                to the security network.
+                No team profiles have been added yet. Add your
+                classmates and security collaborators from the
+                protected administration panel.
               </p>
             </div>
           ) : (
