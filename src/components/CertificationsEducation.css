@@ -1,0 +1,460 @@
+.ce-page {
+  min-height: 100vh;
+  background: var(--bg, #080808);
+  color: var(--text, #f5f5f5);
+}
+
+.ce-header {
+  min-height: 72px;
+  padding: 0 7vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-header > span,
+.ce-eyebrow,
+.ce-section-heading > span,
+.ce-card-label,
+.ce-card-type,
+.ce-platform-card > span,
+.ce-development-copy > span,
+.ce-final > span {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.ce-header > span,
+.ce-section-heading > span,
+.ce-card-label,
+.ce-platform-card > span,
+.ce-development-copy > span,
+.ce-final > span {
+  color: #888;
+}
+
+.ce-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.ce-back:hover {
+  color: #087f8c;
+}
+
+.ce-hero {
+  min-height: 650px;
+  padding: 100px 7vw;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr);
+  gap: 80px;
+  align-items: center;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-hero-main {
+  max-width: 900px;
+}
+
+.ce-eyebrow {
+  color: #087f8c;
+}
+
+.ce-hero h1 {
+  margin: 25px 0 32px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(44px, 6vw, 82px);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+.ce-hero h1 em,
+.ce-development-copy h2 em,
+.ce-final h2 em {
+  color: #087f8c;
+  font-style: normal;
+}
+
+.ce-hero-main > p {
+  max-width: 720px;
+  margin: 0;
+  color: #999;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.ce-hero-side {
+  border-left: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-hero-side div {
+  padding: 25px 0 25px 35px;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-hero-side strong {
+  display: block;
+  margin-bottom: 8px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 25px;
+}
+
+.ce-hero-side span {
+  color: #777;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.ce-section {
+  padding: 105px 7vw;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-section-heading {
+  max-width: 1000px;
+  margin-bottom: 55px;
+}
+
+.ce-section-heading h2 {
+  max-width: 850px;
+  margin: 15px 0 0;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(32px, 4vw, 58px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.ce-section-heading p {
+  max-width: 760px;
+  margin: 25px 0 0;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.ce-education-grid,
+.ce-cert-grid,
+.ce-platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ce-education-card {
+  grid-column: span 2;
+  padding: 42px;
+  position: relative;
+  border: 1px solid rgba(128, 128, 128, .22);
+  background: rgba(128, 128, 128, .035);
+}
+
+.ce-card-number {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  color: #555;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+}
+
+.ce-card-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 35px;
+  color: #087f8c;
+  border: 1px solid rgba(201, 255, 63, .35);
+}
+
+.ce-education-card h3,
+.ce-cert-card h3,
+.ce-platform-card h3 {
+  margin: 12px 0;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 28px;
+  letter-spacing: -.035em;
+}
+
+.ce-card-type {
+  color: #087f8c;
+}
+
+.ce-education-card > p,
+.ce-cert-card > p,
+.ce-platform-card > p {
+  margin: 25px 0 0;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.ce-highlight-list {
+  margin-top: 35px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ce-highlight-list div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.ce-highlight-list svg {
+  flex: 0 0 auto;
+  color: #087f8c;
+}
+
+.ce-cert-card,
+.ce-platform-card {
+  min-height: 330px;
+  padding: 32px;
+  border: 1px solid rgba(128, 128, 128, .22);
+  background: rgba(128, 128, 128, .035);
+}
+
+.ce-cert-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 65px;
+  color: #087f8c;
+}
+
+.ce-cert-top span,
+.ce-platform-index {
+  color: #666;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+}
+
+.ce-cert-card > strong {
+  color: #777;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: .13em;
+}
+
+.ce-platform-card {
+  position: relative;
+}
+
+.ce-platform-card > svg {
+  margin-bottom: 55px;
+  color: #087f8c;
+}
+
+.ce-platform-index {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+}
+
+.ce-platform-card h3 {
+  font-size: 25px;
+}
+
+.ce-development {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: start;
+}
+
+.ce-development-copy h2 {
+  margin: 18px 0 28px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(36px, 4vw, 60px);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+.ce-development-copy p {
+  max-width: 650px;
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.ce-development-list {
+  border-top: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-development-list div {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  align-items: center;
+  min-height: 65px;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-development-list span {
+  color: #666;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+}
+
+.ce-development-list strong {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+
+.ce-final {
+  padding: 130px 7vw;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-final > svg {
+  margin-bottom: 30px;
+  color: #087f8c;
+}
+
+.ce-final h2 {
+  margin: 22px auto;
+  max-width: 850px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(34px, 5vw, 65px);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+.ce-final p {
+  max-width: 650px;
+  margin: 0 auto;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.ce-footer {
+  min-height: 90px;
+  padding: 25px 7vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.ce-footer > span {
+  color: #666;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: .15em;
+}
+
+.ce-footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.ce-footer button:hover {
+  color: #087f8c;
+}
+
+@media (max-width: 900px) {
+  .ce-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 60px;
+  }
+
+  .ce-hero-side {
+    border-left: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ce-hero-side div {
+    padding: 20px;
+    border: 1px solid rgba(128, 128, 128, .22);
+  }
+
+  .ce-education-grid,
+  .ce-cert-grid,
+  .ce-platform-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ce-education-card {
+    grid-column: auto;
+  }
+
+  .ce-development {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ce-header {
+    padding: 0 22px;
+  }
+
+  .ce-header > span {
+    display: none;
+  }
+
+  .ce-hero,
+  .ce-section {
+    padding: 70px 22px;
+  }
+
+  .ce-hero h1 {
+    font-size: 43px;
+  }
+
+  .ce-hero-side {
+    grid-template-columns: 1fr;
+  }
+
+  .ce-highlight-list {
+    grid-template-columns: 1fr;
+  }
+
+  .ce-education-card,
+  .ce-cert-card,
+  .ce-platform-card {
+    padding: 26px;
+  }
+
+  .ce-final {
+    padding: 90px 22px;
+  }
+
+  .ce-footer {
+    padding: 25px 22px;
+  }
+}
