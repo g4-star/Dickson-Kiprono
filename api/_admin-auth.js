@@ -107,3 +107,16 @@ export function clearSessionCookie() {
     "Max-Age=0",
   ].join("; ");
 }
+
+export async function requireAdmin(req, res) {
+  if (!isAdminSessionValid(req)) {
+    res.status(401).json({
+      success: false,
+      error: "Unauthorized",
+    });
+
+    return false;
+  }
+
+  return true;
+}
