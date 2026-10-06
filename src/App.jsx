@@ -324,7 +324,7 @@ function App() {
 
         if (!cancelled) {
           setLabReports(
-            Array.isArray(data.items) ? data.items : []
+            Array.isArray(data.reports) ? data.reports : []
           );
         }
       } catch (error) {
