@@ -2856,3 +2856,36 @@ a {
   object-position: center;
 }
 
+
+/* CMS-driven lab reports */
+.lab-reports-list {
+  display: grid;
+  gap: 24px;
+}
+
+.lab-objective {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border-left: 2px solid var(--accent);
+  background: rgba(8, 127, 140, 0.06);
+}
+
+.lab-objective span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.lab-objective strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.lab-reports-list .lab-feature {
+  margin: 0;
+}

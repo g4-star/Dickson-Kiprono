@@ -299,6 +299,7 @@ function App() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState("home");
+  const [labReports, setLabReports] = useState([]);
   const [privateAdminPage, setPrivateAdminPage] = useState(
     window.location.pathname === "/private-admin"
   );
@@ -307,6 +308,40 @@ function App() {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
     localStorage.setItem("portfolio-theme", dark ? "dark" : "light");
   }, [dark]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadLabReports() {
+      try {
+        const response = await fetch("/api/public-reports");
+
+        if (!response.ok) {
+          throw new Error("Unable to load lab reports.");
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setLabReports(
+            Array.isArray(data.items) ? data.items : []
+          );
+        }
+      } catch (error) {
+        console.error("Public lab reports error:", error);
+
+        if (!cancelled) {
+          setLabReports([]);
+        }
+      }
+    }
+
+    loadLabReports();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const goTo = (id) => {
     setMenuOpen(false);
@@ -744,75 +779,124 @@ function App() {
             number="04"
             eyebrow="TECHNICAL EVIDENCE"
             title="Cybersecurity Lab Reports"
-            text="Hands-on exercises become more useful when they are documented. This section is designed to hold the technical reports, methodology and evidence behind my cybersecurity learning."
+            text="Hands-on exercises become more useful when they are documented. Published reports from my cybersecurity work are presented here with their objectives and supporting documentation."
           />
 
-          <div className="lab-feature">
-            <div className="lab-feature-top">
-              <span className="lab-label">LAB REPORT / NETWORK SECURITY</span>
-              <span className="lab-status">DOCUMENTED</span>
+          {labReports.length > 0 ? (
+            <div className="lab-reports-list">
+              {labReports.map((report) => (
+                <article className="lab-feature" key={report.id}>
+                  <div className="lab-feature-top">
+                    <span className="lab-label">
+                      LAB REPORT
+                      {report.category
+                        ? ` / ${report.category.toUpperCase()}`
+                        : ""}
+                    </span>
+
+                    <span className="lab-status">
+                      PUBLISHED
+                    </span>
+                  </div>
+
+                  <div className="lab-feature-grid">
+                    <div>
+                      <h3>{report.title}</h3>
+
+                      {report.description && (
+                        <p>{report.description}</p>
+                      )}
+
+                      {report.objective && (
+                        <div className="lab-objective">
+                          <span>LAB OBJECTIVE / WHAT THE LAB REQUIRED</span>
+                          <strong>{report.objective}</strong>
+                        </div>
+                      )}
+
+                      {report.category && (
+                        <div className="lab-tags">
+                          <span>{report.category}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="lab-facts">
+                      <div>
+                        <span>DOCUMENT</span>
+                        <strong>
+                          {report.file_name || "Technical report"}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>FORMAT</span>
+                        <strong>
+                          {report.file_type === "application/pdf"
+                            ? "PDF"
+                            : report.file_type ===
+                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            ? "DOCX"
+                            : report.file_type ===
+                              "application/msword"
+                            ? "DOC"
+                            : "DOCUMENT"}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>STATUS</span>
+                        <strong>Published</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lab-actions">
+                    {report.file_url && (
+                      <>
+                        <a
+                          className="button primary"
+                          href={report.file_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink size={16} />
+                          View Report
+                        </a>
+
+                        <a
+                          className="button secondary"
+                          href={report.file_url}
+                          download={report.file_name || true}
+                        >
+                          <Download size={16} />
+                          Download Report
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </article>
+              ))}
             </div>
-
-            <div className="lab-feature-grid">
-              <div>
-                <h3>Implementing Micro-Segmentation in a Zero Trust Network</h3>
-                <p>
-                  A practical security exercise focused on implementing
-                  network segmentation as part of a Zero Trust approach. The
-                  work explores how network boundaries and access controls can
-                  reduce unnecessary communication between systems.
-                </p>
-
-                <div className="lab-tags">
-                  <span>Zero Trust</span>
-                  <span>Network Security</span>
-                  <span>Micro-Segmentation</span>
-                  <span>Security Architecture</span>
-                </div>
+          ) : (
+            <div className="lab-coming">
+              <div className="lab-coming-title">
+                <span>LAB ARCHIVE</span>
+                <strong>
+                  Technical reports will appear here when published.
+                </strong>
               </div>
 
-              <div className="lab-facts">
-                <div>
-                  <span>OBJECTIVE</span>
-                  <strong>Reduce unnecessary trust between network segments.</strong>
-                </div>
-                <div>
-                  <span>FOCUS</span>
-                  <strong>Segmentation, access control and security boundaries.</strong>
-                </div>
-                <div>
-                  <span>OUTPUT</span>
-                  <strong>Technical report with methodology and evidence.</strong>
-                </div>
+              <div className="archive-grid">
+                <span>NETWORK SECURITY</span>
+                <span>LINUX SECURITY</span>
+                <span>DIGITAL FORENSICS</span>
+                <span>SOC / BLUE TEAM</span>
+                <span>ZERO TRUST</span>
+                <span>OTHER LABS</span>
               </div>
             </div>
-
-            <div className="lab-actions">
-              <button className="button primary">
-                <Download size={16} />
-                Report PDF
-              </button>
-              <button className="button secondary">
-                Evidence & Screenshots
-                <ExternalLink size={15} />
-              </button>
-            </div>
-          </div>
-
-          <div className="lab-coming">
-            <div className="lab-coming-title">
-              <span>LAB ARCHIVE</span>
-              <strong>More technical reports will be added here.</strong>
-            </div>
-            <div className="archive-grid">
-              <span>NETWORK SECURITY</span>
-              <span>LINUX SECURITY</span>
-              <span>DIGITAL FORENSICS</span>
-              <span>SOC / BLUE TEAM</span>
-              <span>ZERO TRUST</span>
-              <span>OTHER LABS</span>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* PROJECTS */}
