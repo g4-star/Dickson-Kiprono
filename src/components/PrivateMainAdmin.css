@@ -119,11 +119,32 @@
   width: 100%;
   box-sizing: border-box;
   border: 1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.25);
-  color: inherit;
+  background: #11171a;
+  color: #f3f6f7;
   padding: 12px;
   border-radius: 6px;
   font: inherit;
+}
+
+.private-upload-card input::placeholder,
+.private-upload-card textarea::placeholder,
+.private-login-card input::placeholder {
+  color: #7f8b90;
+  opacity: 1;
+}
+
+.private-upload-card input:focus,
+.private-upload-card textarea:focus,
+.private-upload-card select:focus,
+.private-login-card input:focus {
+  outline: none;
+  border-color: #087f8c;
+  box-shadow: 0 0 0 2px rgba(8,127,140,.15);
+}
+
+.private-upload-card select option {
+  background: #11171a;
+  color: #f3f6f7;
 }
 
 .private-upload-card textarea {
