@@ -2896,23 +2896,34 @@ a {
 
 .lab-reports-archive {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 55px;
-  row-gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .lab-report-card {
   min-width: 0;
-  padding: 25px 0 27px;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  padding: 20px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  transition:
+    border-color .2s ease,
+    transform .2s ease;
+}
+
+.lab-report-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .lab-report-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
-  margin-bottom: 13px;
+  gap: 12px;
+  margin-bottom: 17px;
 }
 
 .lab-report-number {
@@ -2923,18 +2934,16 @@ a {
 }
 
 .lab-report-card .lab-status {
-  display: inline-flex;
-  align-items: center;
   color: #087f8c;
   font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   letter-spacing: .1em;
   white-space: nowrap;
 }
 
 .lab-report-card-body {
-  padding: 0;
+  flex: 1;
 }
 
 .lab-report-category {
@@ -2949,42 +2958,43 @@ a {
 }
 
 .lab-report-card h3 {
-  margin: 0 0 9px;
+  margin: 0 0 10px;
   color: var(--text);
-  font-size: 16px;
-  line-height: 1.35;
+  font-size: 15px;
+  line-height: 1.4;
   letter-spacing: -.02em;
 }
 
 .lab-report-card p {
   display: -webkit-box;
   overflow: hidden;
-  max-width: 620px;
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.65;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
 }
 
 .lab-report-card-footer {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-top: 15px;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
 }
 
 .lab-report-link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 0;
+  gap: 6px;
+  padding: 4px 0;
   border: 0;
   background: transparent;
   color: var(--text);
   font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   letter-spacing: .06em;
   text-decoration: none;
@@ -3004,57 +3014,18 @@ a {
   color: var(--accent);
 }
 
-@media (max-width: 850px) {
+@media (max-width: 1050px) {
+  .lab-reports-archive {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
   .lab-reports-archive {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 560px) {
   .lab-report-card {
-    padding: 22px 0 24px;
-  }
-
-  .lab-report-card-footer {
-    gap: 14px;
-  }
-
-  .lab-report-link {
-    font-size: 8px;
-  }
-}
-
-
-/* --------------------------------------------------
-   PRIVATE ADMIN ACCESS
--------------------------------------------------- */
-
-.footer-bottom {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
-}
-
-.footer-admin-link {
-  color: var(--dim);
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 7px;
-  letter-spacing: .12em;
-  text-decoration: none;
-  transition: color .2s ease;
-}
-
-.footer-admin-link:hover {
-  color: var(--accent);
-}
-
-@media (max-width: 560px) {
-  .footer-bottom {
-    gap: 14px;
-  }
-
-  .footer-admin-link {
-    font-size: 7px;
+    min-height: 0;
   }
 }
