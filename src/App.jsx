@@ -1220,7 +1220,16 @@ function App() {
           Security-first thinking · Practical learning · Continuous growth
         </p>
 
-        <span>© {new Date().getFullYear()} DICKSON KIPRONO</span>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} DICKSON KIPRONO</span>
+
+          <a
+            href="/private-admin"
+            className="footer-admin-link"
+          >
+            ADMIN ACCESS
+          </a>
+        </div>
       </footer>
     </div>
   );

@@ -3023,3 +3023,38 @@ a {
     font-size: 8px;
   }
 }
+
+
+/* --------------------------------------------------
+   PRIVATE ADMIN ACCESS
+-------------------------------------------------- */
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.footer-admin-link {
+  color: var(--dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 7px;
+  letter-spacing: .12em;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.footer-admin-link:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .footer-bottom {
+    gap: 14px;
+  }
+
+  .footer-admin-link {
+    font-size: 7px;
+  }
+}
