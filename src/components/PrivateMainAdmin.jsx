@@ -173,7 +173,7 @@ export default function PrivateMainAdmin({ onBack }) {
 
   async function togglePublished(item) {
     try {
-      setError("");
+      setMessage("");
 
       const response = await fetch(
         `/api/private-admin-content?id=${item.id}`,
@@ -196,9 +196,15 @@ export default function PrivateMainAdmin({ onBack }) {
         );
       }
 
+      setMessage(
+        item.published
+          ? "Content unpublished successfully."
+          : "Content published successfully."
+      );
+
       await loadContent();
     } catch (error) {
-      setError(
+      setMessage(
         error.message || "Unable to update publication status."
       );
     }
