@@ -1226,6 +1226,17 @@ function App() {
           <a
             href="/private-admin"
             className="footer-admin-link"
+            onClick={async (event) => {
+              event.preventDefault();
+
+              try {
+                await fetch("/api/private-admin-logout", {
+                  method: "POST",
+                });
+              } finally {
+                window.location.href = "/private-admin";
+              }
+            }}
           >
             ADMIN ACCESS
           </a>
