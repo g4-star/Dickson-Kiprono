@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { portfolio } from "./data/portfolio";
 import SecurityTeam from "./components/SecurityTeam";
-import PrivateMainAdmin from "./components/PrivateMainAdmin";
 import CertificationsEducation from "./components/CertificationsEducation";
 import "./App.css";
 
@@ -299,9 +298,6 @@ function App() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState("home");
-  const [privateAdminPage, setPrivateAdminPage] = useState(
-    window.location.pathname === "/private-admin"
-  );
 
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
@@ -335,17 +331,6 @@ function App() {
       block: "start",
     });
   };
-
-  if (privateAdminPage) {
-    return (
-      <PrivateMainAdmin
-        onBack={() => {
-          setPrivateAdminPage(false);
-          window.scrollTo({ top: 0, behavior: "auto" });
-        }}
-      />
-    );
-  }
 
   if (currentPage === "security-team") {
     return (
