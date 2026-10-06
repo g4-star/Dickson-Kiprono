@@ -305,6 +305,51 @@ async function updateContent(req, res, sql) {
     });
   }
 
+  const current = content[0];
+
+  const contentTypeHeader = String(
+    req.headers["content-type"] || ""
+  ).toLowerCase();
+
+  if (contentTypeHeader.includes("application/json")) {
+    const published =
+      req.body &&
+      typeof req.body.published === "boolean"
+        ? req.body.published
+        : null;
+
+    if (published === null) {
+      return res.status(400).json({
+        success: false,
+        error: "A valid published value is required.",
+      });
+    }
+
+    if (current.content_type === "profile_image" && published) {
+      await sql`
+        UPDATE portfolio_content
+        SET published = FALSE,
+            updated_at = NOW()
+        WHERE content_type = 'profile_image'
+          AND id <> ${id};
+      `;
+    }
+
+    const rows = await sql`
+      UPDATE portfolio_content
+      SET
+        published = ${published},
+        updated_at = NOW()
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    return res.status(200).json({
+      success: true,
+      item: rows[0],
+    });
+  }
+
   const form = formidable({
     multiples: false,
     maxFileSize: MAX_FILE_SIZE,
@@ -314,8 +359,6 @@ async function updateContent(req, res, sql) {
   });
 
   const [fields, files] = await form.parse(req);
-
-  const current = content[0];
 
   const title =
     fieldValue(fields, "title") !== ""
