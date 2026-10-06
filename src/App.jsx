@@ -779,19 +779,16 @@ function App() {
             number="04"
             eyebrow="TECHNICAL EVIDENCE"
             title="Cybersecurity Lab Reports"
-            text="Hands-on exercises become more useful when they are documented. Published reports from my cybersecurity work are presented here with their objectives and supporting documentation."
+            text="A growing archive of documented cybersecurity laboratories, assessments and practical security exercises."
           />
 
           {labReports.length > 0 ? (
-            <div className="lab-reports-list">
-              {labReports.map((report) => (
-                <article className="lab-feature" key={report.id}>
-                  <div className="lab-feature-top">
-                    <span className="lab-label">
-                      LAB REPORT
-                      {report.category
-                        ? ` / ${report.category.toUpperCase()}`
-                        : ""}
+            <div className="lab-reports-archive">
+              {labReports.map((report, index) => (
+                <article className="lab-report-card" key={report.id}>
+                  <div className="lab-report-card-top">
+                    <span className="lab-report-number">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
 
                     <span className="lab-status">
@@ -799,78 +796,46 @@ function App() {
                     </span>
                   </div>
 
-                  <div className="lab-feature-grid">
-                    <div>
-                      <h3>{report.title}</h3>
+                  <div className="lab-report-card-body">
+                    <span className="lab-report-category">
+                      {report.category || "CYBERSECURITY LAB"}
+                    </span>
 
-                      {report.description && (
-                        <p>{report.description}</p>
-                      )}
+                    <h3>{report.title}</h3>
 
-                      {report.objective && (
-                        <div className="lab-objective">
-                          <span>LAB OBJECTIVE / WHAT THE LAB REQUIRED</span>
-                          <strong>{report.objective}</strong>
-                        </div>
-                      )}
-
-                      {report.category && (
-                        <div className="lab-tags">
-                          <span>{report.category}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="lab-facts">
-                      <div>
-                        <span>DOCUMENT</span>
-                        <strong>
-                          {report.file_name || "Technical report"}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>FORMAT</span>
-                        <strong>
-                          {report.file_type === "application/pdf"
-                            ? "PDF"
-                            : report.file_type ===
-                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                            ? "DOCX"
-                            : report.file_type ===
-                              "application/msword"
-                            ? "DOC"
-                            : "DOCUMENT"}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>STATUS</span>
-                        <strong>Published</strong>
-                      </div>
-                    </div>
+                    <p>
+                      {(report.description ||
+                        report.objective ||
+                        "Practical cybersecurity laboratory documented through a technical report.")
+                        .replace(/\\s+/g, " ")
+                        .trim()
+                        .slice(0, 220)}
+                      {(report.description || report.objective || "").length > 220
+                        ? "..."
+                        : ""}
+                    </p>
                   </div>
 
-                  <div className="lab-actions">
+                  <div className="lab-report-card-footer">
                     {report.file_url && (
                       <>
                         <a
-                          className="button primary"
+                          className="lab-report-link primary"
                           href={report.file_url}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <ExternalLink size={16} />
+                          <ExternalLink size={14} />
                           View Report
                         </a>
 
                         <a
-                          className="button secondary"
+                          className="lab-report-link secondary"
                           href={report.file_url}
                           download={report.file_name || true}
                         >
-                          <Download size={16} />
-                          Download Report
+                          <Download size={14} />
+                          Download
                         </a>
                       </>
                     )}
