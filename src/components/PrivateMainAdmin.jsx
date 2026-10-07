@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import {
   Check,
   FileText,
@@ -154,25 +155,58 @@ export default function PrivateMainAdmin({ onBack }) {
     setMessage("");
 
     try {
-      const body = new FormData();
+      const file = form.file;
 
-      body.append("content_type", form.content_type);
-      body.append("title", form.title);
-      body.append("description", form.description);
-      body.append("objective", form.objective);
-      body.append("category", form.category);
-      body.append("published", String(form.published));
-      body.append("file", form.file);
+      setMessage("Preparing secure upload...");
 
-      const response = await fetch("/api/private-admin-content", {
-        method: "POST",
-        body,
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/private-admin-blob-upload",
+        clientPayload: JSON.stringify({
+          content_type: form.content_type,
+          file_name: file.name,
+        }),
+        multipart: true,
+        onUploadProgress: ({ percentage }) => {
+          const progress = Math.max(
+            0,
+            Math.min(100, Math.round(percentage))
+          );
+
+          setMessage(`Uploading ${progress}%...`);
+        },
       });
+
+      setMessage("Upload complete. Saving content metadata...");
+
+      const response = await fetch(
+        "/api/private-admin-content-create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content_type: form.content_type,
+            title: form.title,
+            description: form.description,
+            objective: form.objective,
+            category: form.category,
+            published: form.published,
+            file_url: blob.url,
+            file_name: file.name,
+            file_type: file.type || blob.contentType,
+            file_size: file.size,
+          }),
+        }
+      );
 
       const data = await readApiResponse(response);
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Upload failed.");
+        throw new Error(
+          data.error || "Unable to save uploaded content."
+        );
       }
 
       setMessage("Content uploaded successfully.");
@@ -187,11 +221,19 @@ export default function PrivateMainAdmin({ onBack }) {
         file: null,
       });
 
-      document.getElementById("private-file-input").value = "";
+      const fileInput = document.getElementById(
+        "private-file-input"
+      );
+
+      if (fileInput) {
+        fileInput.value = "";
+      }
 
       await loadContent();
     } catch (error) {
-      setMessage(error.message);
+      setMessage(
+        error?.message || "Unable to upload content."
+      );
     } finally {
       setUploading(false);
     }
