@@ -1,17 +1,8 @@
-import fs from "node:fs/promises";
 import crypto from "node:crypto";
-import { put, del } from "@vercel/blob";
+import { handleUpload } from "@vercel/blob/client";
+import { del } from "@vercel/blob";
 import { neon } from "@neondatabase/serverless";
-import { formidable } from "formidable";
 import { requirePrivateAdmin } from "./_private-admin-auth.js";
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const ALLOWED_TYPES = new Set([
   "application/pdf",
@@ -30,26 +21,19 @@ const ALLOWED_CONTENT_TYPES = new Set([
   "profile_image",
 ]);
 
+const MAX_BLOB_SIZE = 5 * 1024 * 1024 * 1024 * 1024;
+
 function cleanText(value, max = 20000) {
   return String(value || "").trim().slice(0, max);
 }
 
-function fieldValue(fields, name) {
-  const value = fields?.[name];
+function safeFileName(value) {
+  const name = cleanText(value, 300)
+    .replace(/[^a-zA-Z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
-  if (Array.isArray(value)) {
-    return value[0] ?? "";
-  }
-
-  return value ?? "";
-}
-
-function getSingleFile(value) {
-  if (Array.isArray(value)) {
-    return value[0] || null;
-  }
-
-  return value || null;
+  return name || "upload";
 }
 
 function checkEnvironment(res) {
@@ -58,6 +42,7 @@ function checkEnvironment(res) {
       success: false,
       error: "DATABASE_URL is not configured.",
     });
+
     return false;
   }
 
@@ -66,6 +51,7 @@ function checkEnvironment(res) {
       success: false,
       error: "BLOB_READ_WRITE_TOKEN is not configured.",
     });
+
     return false;
   }
 
@@ -102,57 +88,23 @@ async function ensureTable(sql) {
   `;
 }
 
-async function uploadFile(file, contentType) {
-  if (!file) {
-    throw new Error("A file is required.");
-  }
+function isValidBlobUrl(value) {
+  try {
+    const url = new URL(value);
 
-  const mimeType = file.mimetype || "";
-
-  if (!ALLOWED_TYPES.has(mimeType)) {
-    throw new Error(
-      "Unsupported file type. Use PDF, DOC, DOCX, JPG, PNG or WebP."
+    return (
+      url.protocol === "https:" &&
+      url.hostname.endsWith(".public.blob.vercel-storage.com")
     );
+  } catch {
+    return false;
   }
-
-  if (!file.size || file.size <= 0) {
-    throw new Error("The uploaded file is empty.");
-  }
-
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error("The maximum file size is 25 MB.");
-  }
-
-  const buffer = await fs.readFile(file.filepath);
-
-  const originalName = file.originalFilename || "upload";
-
-  const safeName = originalName
-    .replace(/[^a-zA-Z0-9._-]/g, "-")
-    .replace(/-+/g, "-")
-    .slice(-140);
-
-  const blob = await put(
-    `portfolio/${contentType}/${crypto.randomUUID()}-${safeName}`,
-    buffer,
-    {
-      access: "public",
-      addRandomSuffix: false,
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: mimeType,
-    }
-  );
-
-  return {
-    url: blob.url,
-    name: originalName,
-    type: mimeType,
-    size: file.size,
-  };
 }
 
 async function deleteBlob(url) {
-  if (!url) return;
+  if (!url) {
+    return;
+  }
 
   try {
     await del(url, {
@@ -176,42 +128,111 @@ async function listContent(res, sql) {
   });
 }
 
+async function handleBlobUpload(req, res) {
+  try {
+    const jsonResponse = await handleUpload({
+      body: req.body,
+      request: req,
+
+      onBeforeGenerateToken: async (
+        pathname,
+        clientPayload,
+        multipart
+      ) => {
+        let payload = {};
+
+        try {
+          payload = clientPayload
+            ? JSON.parse(clientPayload)
+            : {};
+        } catch {
+          throw new Error("Invalid upload payload.");
+        }
+
+        const contentType = cleanText(
+          payload.content_type,
+          40
+        );
+
+        if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
+          throw new Error("Invalid content type.");
+        }
+
+        const originalName = safeFileName(
+          payload.file_name
+        );
+
+        const serverPathname =
+          `portfolio/${contentType}/` +
+          `${crypto.randomUUID()}-${originalName}`;
+
+        return {
+          pathname: serverPathname,
+          allowedContentTypes: [...ALLOWED_TYPES],
+          maximumSizeInBytes: MAX_BLOB_SIZE,
+          addRandomSuffix: false,
+          multipart: Boolean(multipart),
+
+          tokenPayload: JSON.stringify({
+            content_type: contentType,
+            file_name: originalName,
+          }),
+        };
+      },
+
+      onUploadCompleted: async ({
+        blob,
+        tokenPayload,
+      }) => {
+        console.log(
+          "Private admin Blob upload completed:",
+          blob.url,
+          tokenPayload
+        );
+      },
+    });
+
+    return res.status(200).json(jsonResponse);
+  } catch (error) {
+    console.error(
+      "Private admin Blob upload error:",
+      error
+    );
+
+    return res.status(400).json({
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unable to prepare Blob upload.",
+    });
+  }
+}
+
 async function createContent(req, res, sql) {
-  const form = formidable({
-    multiples: false,
-    maxFileSize: MAX_FILE_SIZE,
-    maxTotalFileSize: MAX_FILE_SIZE,
-    allowEmptyFiles: false,
-    keepExtensions: true,
-  });
+  let body = req.body;
 
-  const [fields, files] = await form.parse(req);
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid JSON request.",
+      });
+    }
+  }
 
-  const contentType = cleanText(
-    fieldValue(fields, "content_type"),
-    40
-  );
-
-  const title = cleanText(
-    fieldValue(fields, "title"),
-    300
-  );
-
-  const description = cleanText(
-    fieldValue(fields, "description")
-  );
-
-  const objective = cleanText(
-    fieldValue(fields, "objective")
-  );
-
-  const category = cleanText(
-    fieldValue(fields, "category"),
-    300
-  );
-
-  const published =
-    fieldValue(fields, "published") === "true";
+  const contentType = cleanText(body?.content_type, 40);
+  const title = cleanText(body?.title, 300);
+  const description = cleanText(body?.description);
+  const objective = cleanText(body?.objective);
+  const category = cleanText(body?.category, 300);
+  const fileUrl = cleanText(body?.file_url, 2000);
+  const fileName = safeFileName(body?.file_name);
+  const fileType = cleanText(body?.file_type, 150);
+  const fileSize = Number(body?.file_size);
+  const published = body?.published === true;
 
   if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
     return res.status(400).json({
@@ -227,22 +248,38 @@ async function createContent(req, res, sql) {
     });
   }
 
-  const file = getSingleFile(files?.file);
-
-  if (!file) {
+  if (!isValidBlobUrl(fileUrl)) {
     return res.status(400).json({
       success: false,
-      error: "File is required.",
+      error: "Invalid Vercel Blob URL.",
     });
   }
 
-  const uploaded = await uploadFile(file, contentType);
+  if (!ALLOWED_TYPES.has(fileType)) {
+    return res.status(400).json({
+      success: false,
+      error:
+        "Unsupported file type. Use PDF, DOC, DOCX, JPG, PNG or WebP.",
+    });
+  }
+
+  if (
+    !Number.isSafeInteger(fileSize) ||
+    fileSize <= 0 ||
+    fileSize > MAX_BLOB_SIZE
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid file size.",
+    });
+  }
 
   if (contentType === "profile_image") {
     await sql`
       UPDATE portfolio_content
-      SET published = FALSE,
-          updated_at = NOW()
+      SET
+        published = FALSE,
+        updated_at = NOW()
       WHERE content_type = 'profile_image';
     `;
   }
@@ -266,10 +303,10 @@ async function createContent(req, res, sql) {
       ${description},
       ${objective},
       ${category},
-      ${uploaded.url},
-      ${uploaded.name},
-      ${uploaded.type},
-      ${uploaded.size},
+      ${fileUrl},
+      ${fileName},
+      ${fileType},
+      ${fileSize},
       ${published}
     )
     RETURNING *;
@@ -291,6 +328,26 @@ async function updateContent(req, res, sql) {
     });
   }
 
+  let body = req.body;
+
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid JSON request.",
+      });
+    }
+  }
+
+  if (typeof body?.published !== "boolean") {
+    return res.status(400).json({
+      success: false,
+      error: "A valid published value is required.",
+    });
+  }
+
   const content = await sql`
     SELECT *
     FROM portfolio_content
@@ -306,109 +363,14 @@ async function updateContent(req, res, sql) {
   }
 
   const current = content[0];
-
-  const contentTypeHeader = String(
-    req.headers["content-type"] || ""
-  ).toLowerCase();
-
-  if (contentTypeHeader.includes("application/json")) {
-    const published =
-      req.body &&
-      typeof req.body.published === "boolean"
-        ? req.body.published
-        : null;
-
-    if (published === null) {
-      return res.status(400).json({
-        success: false,
-        error: "A valid published value is required.",
-      });
-    }
-
-    if (current.content_type === "profile_image" && published) {
-      await sql`
-        UPDATE portfolio_content
-        SET published = FALSE,
-            updated_at = NOW()
-        WHERE content_type = 'profile_image'
-          AND id <> ${id};
-      `;
-    }
-
-    const rows = await sql`
-      UPDATE portfolio_content
-      SET
-        published = ${published},
-        updated_at = NOW()
-      WHERE id = ${id}
-      RETURNING *;
-    `;
-
-    return res.status(200).json({
-      success: true,
-      item: rows[0],
-    });
-  }
-
-  const form = formidable({
-    multiples: false,
-    maxFileSize: MAX_FILE_SIZE,
-    maxTotalFileSize: MAX_FILE_SIZE,
-    allowEmptyFiles: false,
-    keepExtensions: true,
-  });
-
-  const [fields, files] = await form.parse(req);
-
-  const title =
-    fieldValue(fields, "title") !== ""
-      ? cleanText(fieldValue(fields, "title"), 300)
-      : current.title;
-
-  const description =
-    fieldValue(fields, "description") !== ""
-      ? cleanText(fieldValue(fields, "description"))
-      : current.description;
-
-  const objective =
-    fieldValue(fields, "objective") !== ""
-      ? cleanText(fieldValue(fields, "objective"))
-      : current.objective;
-
-  const category =
-    fieldValue(fields, "category") !== ""
-      ? cleanText(fieldValue(fields, "category"), 300)
-      : current.category;
-
-  const published =
-    fieldValue(fields, "published") === "true";
-
-  const newFile = getSingleFile(files?.file);
-
-  let fileUrl = current.file_url;
-  let fileName = current.file_name;
-  let fileType = current.file_type;
-  let fileSize = current.file_size;
-
-  if (newFile) {
-    const uploaded = await uploadFile(
-      newFile,
-      current.content_type
-    );
-
-    fileUrl = uploaded.url;
-    fileName = uploaded.name;
-    fileType = uploaded.type;
-    fileSize = uploaded.size;
-
-    await deleteBlob(current.file_url);
-  }
+  const published = body.published;
 
   if (current.content_type === "profile_image" && published) {
     await sql`
       UPDATE portfolio_content
-      SET published = FALSE,
-          updated_at = NOW()
+      SET
+        published = FALSE,
+        updated_at = NOW()
       WHERE content_type = 'profile_image'
         AND id <> ${id};
     `;
@@ -417,14 +379,6 @@ async function updateContent(req, res, sql) {
   const rows = await sql`
     UPDATE portfolio_content
     SET
-      title = ${title},
-      description = ${description},
-      objective = ${objective},
-      category = ${category},
-      file_url = ${fileUrl},
-      file_name = ${fileName},
-      file_type = ${fileType},
-      file_size = ${fileSize},
       published = ${published},
       updated_at = NOW()
     WHERE id = ${id}
@@ -476,9 +430,53 @@ async function deleteContent(req, res, sql) {
 export default async function handler(req, res) {
   const authenticated = await requirePrivateAdmin(req, res);
 
-  if (!authenticated) return;
+  if (!authenticated) {
+    return;
+  }
 
-  if (!checkEnvironment(res)) return;
+  if (req.method === "POST") {
+    const contentType =
+      String(req.headers["content-type"] || "").toLowerCase();
+
+    if (
+      contentType.includes("application/json") &&
+      typeof req.body === "object" &&
+      req.body !== null &&
+      (
+        "file_url" in req.body ||
+        "content_type" in req.body
+      )
+    ) {
+      if (!checkEnvironment(res)) {
+        return;
+      }
+
+      const sql = neon(process.env.DATABASE_URL);
+
+      try {
+        await ensureTable(sql);
+        return await createContent(req, res, sql);
+      } catch (error) {
+        console.error(
+          "Private admin metadata error:",
+          error
+        );
+
+        return res.status(500).json({
+          success: false,
+          error:
+            error.message ||
+            "Unable to save portfolio content.",
+        });
+      }
+    }
+
+    return handleBlobUpload(req, res);
+  }
+
+  if (!checkEnvironment(res)) {
+    return;
+  }
 
   const sql = neon(process.env.DATABASE_URL);
 
@@ -487,10 +485,6 @@ export default async function handler(req, res) {
 
     if (req.method === "GET") {
       return listContent(res, sql);
-    }
-
-    if (req.method === "POST") {
-      return createContent(req, res, sql);
     }
 
     if (req.method === "PUT") {
@@ -508,11 +502,16 @@ export default async function handler(req, res) {
       error: "Method not allowed",
     });
   } catch (error) {
-    console.error("Private admin content error:", error);
+    console.error(
+      "Private admin content error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Unable to manage portfolio content.",
+      error:
+        error.message ||
+        "Unable to manage portfolio content.",
     });
   }
 }

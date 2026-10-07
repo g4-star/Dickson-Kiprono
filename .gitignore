@@ -25,3 +25,6 @@ dist-ssr
 .env.local
 .vercel
 .env*
+
+# Local recovery backups
+.backup/
