@@ -20,6 +20,32 @@ const CONTENT_TYPES = [
   ["profile_image", "Profile Image"],
 ];
 
+async function readApiResponse(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return {};
+  }
+
+  const contentType =
+    response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(
+        `Server returned invalid JSON (HTTP ${response.status}).`
+      );
+    }
+  }
+
+  throw new Error(
+    text.trim() ||
+      `Request failed with HTTP ${response.status}.`
+  );
+}
+
 export default function PrivateMainAdmin({ onBack }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -50,7 +76,7 @@ export default function PrivateMainAdmin({ onBack }) {
         return;
       }
 
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (data.success) {
         setAuthenticated(true);
@@ -81,7 +107,7 @@ export default function PrivateMainAdmin({ onBack }) {
         body: JSON.stringify({ password }),
       });
 
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (!response.ok || !data.success) {
         setLoginError(data.error || "Invalid password.");
@@ -143,7 +169,7 @@ export default function PrivateMainAdmin({ onBack }) {
         body,
       });
 
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Upload failed.");
@@ -188,7 +214,7 @@ export default function PrivateMainAdmin({ onBack }) {
         }
       );
 
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (!response.ok) {
         throw new Error(
@@ -223,7 +249,7 @@ export default function PrivateMainAdmin({ onBack }) {
         }
       );
 
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Delete failed.");
