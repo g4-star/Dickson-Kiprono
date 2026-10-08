@@ -20,33 +20,53 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
 
-    const rows = await sql`
-      SELECT
-        id,
-        title,
-        description,
-        objective,
-        category,
-        file_url,
-        file_name,
-        file_type,
-        created_at
-      FROM portfolio_content
-      WHERE content_type = 'report'
-        AND published = TRUE
-      ORDER BY created_at DESC;
-    `;
+    const [reports, projects] = await Promise.all([
+      sql`
+        SELECT
+          id,
+          title,
+          description,
+          objective,
+          category,
+          file_url,
+          file_name,
+          file_type,
+          created_at
+        FROM portfolio_content
+        WHERE content_type = 'report'
+          AND published = TRUE
+        ORDER BY created_at DESC;
+      `,
+
+      sql`
+        SELECT
+          id,
+          title,
+          description,
+          objective,
+          category,
+          file_url,
+          file_name,
+          file_type,
+          created_at
+        FROM portfolio_content
+        WHERE content_type = 'project_code'
+          AND published = TRUE
+        ORDER BY created_at DESC;
+      `,
+    ]);
 
     return res.status(200).json({
       success: true,
-      reports: rows,
+      reports,
+      projects,
     });
   } catch (error) {
-    console.error("Public reports error:", error);
+    console.error("Public lab content error:", error);
 
     return res.status(500).json({
       success: false,
-      error: "Unable to load reports.",
+      error: "Unable to load lab content.",
     });
   }
 }

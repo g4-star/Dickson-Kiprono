@@ -300,6 +300,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState("home");
   const [labReports, setLabReports] = useState([]);
+  const [labProjects, setLabProjects] = useState([]);
   const [privateAdminPage, setPrivateAdminPage] = useState(
     window.location.pathname === "/private-admin"
   );
@@ -326,12 +327,17 @@ function App() {
           setLabReports(
             Array.isArray(data.reports) ? data.reports : []
           );
+
+          setLabProjects(
+            Array.isArray(data.projects) ? data.projects : []
+          );
         }
       } catch (error) {
         console.error("Public lab reports error:", error);
 
         if (!cancelled) {
           setLabReports([]);
+          setLabProjects([]);
         }
       }
     }
@@ -807,7 +813,7 @@ function App() {
                       {(report.description ||
                         report.objective ||
                         "Practical cybersecurity laboratory documented through a technical report.")
-                        .replace(/\\s+/g, " ")
+                        .replace(/\s+/g, " ")
                         .trim()
                         .slice(0, 220)}
                       {(report.description || report.objective || "").length > 220
@@ -864,10 +870,107 @@ function App() {
           )}
         </section>
 
+        {/* LAB PROJECTS */}
+        <section className="section labs-projects-section">
+          <SectionHeader
+            number="05"
+            eyebrow="SOURCE CODE"
+            title="Cybersecurity Lab Projects"
+            text="Practical cybersecurity projects and laboratory code demonstrating hands-on security research, automation and technical problem solving."
+          />
+
+          {labProjects.length > 0 ? (
+            <div className="lab-projects-archive">
+              {labProjects.map((project, index) => (
+                <article className="lab-project-card" key={project.id}>
+                  <div className="lab-project-card-top">
+                    <span className="lab-project-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+
+                    <span className="lab-project-status">
+                      PROJECT CODE
+                    </span>
+                  </div>
+
+                  <div className="lab-project-card-body">
+                    <span className="lab-project-category">
+                      {project.category || "CYBERSECURITY PROJECT"}
+                    </span>
+
+                    <h3>{project.title}</h3>
+
+                    <p>
+                      {(project.description ||
+                        project.objective ||
+                        "Practical cybersecurity project documented through source code.")
+                        .replace(/\s+/g, " ")
+                        .trim()
+                        .slice(0, 220)}
+                      {(project.description || project.objective || "").length > 220
+                        ? "..."
+                        : ""}
+                    </p>
+
+                    {project.file_type && (
+                      <span className="lab-project-file-type">
+                        {project.file_type}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="lab-project-card-footer">
+                    {project.file_url && (
+                      <>
+                        <a
+                          className="lab-project-link primary"
+                          href={project.file_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink size={14} />
+                          View Code
+                        </a>
+
+                        <a
+                          className="lab-project-link secondary"
+                          href={project.file_url}
+                          download={project.file_name || true}
+                        >
+                          <Download size={14} />
+                          Download
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="lab-coming lab-projects-coming">
+              <div className="lab-coming-title">
+                <span>PROJECT ARCHIVE</span>
+                <strong>
+                  Cybersecurity projects will appear here when published.
+                </strong>
+              </div>
+
+              <div className="archive-grid">
+                <span>PYTHON</span>
+                <span>LINUX SECURITY</span>
+                <span>SECURITY AUTOMATION</span>
+                <span>NETWORK SECURITY</span>
+                <span>DIGITAL FORENSICS</span>
+                <span>OTHER PROJECTS</span>
+              </div>
+            </div>
+          )}
+        </section>
+
         {/* PROJECTS */}
         <section id="projects" className="section projects-section">
           <SectionHeader
-            number="05"
+            number="06"
             eyebrow="PRACTICAL WORK"
             title="Projects that demonstrate technical problem-solving."
             text="Software projects appear here as evidence of practical engineering capability supporting my wider cybersecurity and technology work."
@@ -925,7 +1028,7 @@ function App() {
         {/* TOOLS */}
         <section id="skills" className="section tools-section">
           <SectionHeader
-            number="06"
+            number="07"
             eyebrow="TECHNICAL TOOLKIT"
             title="Tools I use to investigate, build and understand systems."
             text="The list combines cybersecurity tooling with the systems and programming technologies that support my security work."
@@ -984,7 +1087,7 @@ function App() {
         {/* LEARNING */}
         <section id="learning" className="section learning-section">
           <SectionHeader
-            number="07"
+            number="08"
             eyebrow="CONTINUOUS DEVELOPMENT"
             title="Learning is part of the security workflow."
             text="My cybersecurity knowledge is built through structured training and repeated hands-on practice."
@@ -1020,7 +1123,7 @@ function App() {
         {/* METHOD */}
         <section className="section workflow-section">
           <SectionHeader
-            number="08"
+            number="09"
             eyebrow="METHOD"
             title="How I approach technical security projects."
             text="I use a structured security workflow to move from understanding a problem to producing evidence-backed findings and clear technical documentation."
@@ -1067,7 +1170,7 @@ function App() {
         {/* SERVICES */}
         <section id="services" className="section services-section">
           <SectionHeader
-            number="09"
+            number="10"
             eyebrow="WHAT I CAN HELP WITH"
             title="Technical services with a security mindset."
             text="My services are focused on practical technical assistance, security awareness and building technology that takes security seriously."
@@ -1151,7 +1254,7 @@ function App() {
         {/* CONTACT */}
         <section id="contact" className="section contact-section">
           <SectionHeader
-            number="10"
+            number="11"
             eyebrow="CONTACT"
             title="Let's talk about cybersecurity, technology or opportunities."
             text="I am interested in cybersecurity internships, junior security roles, technical collaborations and opportunities where I can continue developing practical security capability."
@@ -1208,6 +1311,8 @@ function App() {
             </div>
           </div>
         </section>
+
+
       </main>
 
       <footer className="footer">

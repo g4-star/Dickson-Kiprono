@@ -3029,3 +3029,159 @@ a {
     min-height: 0;
   }
 }
+
+/* --------------------------------------------------
+   CMS LAB PROJECT ARCHIVE
+-------------------------------------------------- */
+
+.labs-projects-section {
+  padding-top: 40px;
+}
+
+.lab-projects-archive {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.lab-project-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  padding: 20px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  transition:
+    border-color .2s ease,
+    transform .2s ease;
+}
+
+.lab-project-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.lab-project-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.lab-project-number {
+  color: var(--accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+.lab-project-status {
+  color: #087f8c;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+.lab-project-card-body {
+  flex: 1;
+}
+
+.lab-project-category {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--dim);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 7px;
+  line-height: 1.4;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.lab-project-card h3 {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -.02em;
+}
+
+.lab-project-card p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.lab-project-file-type {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.lab-project-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+}
+
+.lab-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .2s ease;
+}
+
+.lab-project-link.primary {
+  color: #087f8c;
+}
+
+.lab-project-link.secondary {
+  color: var(--text);
+}
+
+.lab-project-link:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 1050px) {
+  .lab-projects-archive {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .lab-projects-archive {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-project-card {
+    min-height: 0;
+  }
+}
