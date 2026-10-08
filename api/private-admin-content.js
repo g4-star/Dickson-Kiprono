@@ -422,13 +422,6 @@ async function updateContent(req, res, sql) {
     }
   }
 
-  if (typeof body?.published !== "boolean") {
-    return res.status(400).json({
-      success: false,
-      error: "A valid published value is required.",
-    });
-  }
-
   const content = await sql`
     SELECT *
     FROM portfolio_content
@@ -444,9 +437,145 @@ async function updateContent(req, res, sql) {
   }
 
   const current = content[0];
-  const published = body.published;
 
-  if (current.content_type === "profile_image" && published) {
+  const isFullEdit =
+    "content_type" in (body || {}) ||
+    "title" in (body || {}) ||
+    "description" in (body || {}) ||
+    "objective" in (body || {}) ||
+    "category" in (body || {}) ||
+    "file_url" in (body || {}) ||
+    "file_name" in (body || {}) ||
+    "file_type" in (body || {}) ||
+    "file_size" in (body || {});
+
+  if (!isFullEdit) {
+    if (typeof body?.published !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        error: "A valid published value is required.",
+      });
+    }
+
+    const published = body.published;
+
+    if (current.content_type === "profile_image" && published) {
+      await sql`
+        UPDATE portfolio_content
+        SET
+          published = FALSE,
+          updated_at = NOW()
+        WHERE content_type = 'profile_image'
+          AND id <> ${id};
+      `;
+    }
+
+    const rows = await sql`
+      UPDATE portfolio_content
+      SET
+        published = ${published},
+        updated_at = NOW()
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    return res.status(200).json({
+      success: true,
+      item: rows[0],
+    });
+  }
+
+  const contentType = cleanText(
+    body?.content_type ?? current.content_type,
+    40
+  );
+
+  const title = cleanText(
+    body?.title ?? current.title,
+    300
+  );
+
+  const description = cleanText(
+    body?.description ?? current.description
+  );
+
+  const objective = cleanText(
+    body?.objective ?? current.objective
+  );
+
+  const category = cleanText(
+    body?.category ?? current.category,
+    300
+  );
+
+  const fileUrl = cleanText(
+    body?.file_url ?? current.file_url,
+    2000
+  );
+
+  const fileName = safeFileName(
+    body?.file_name ?? current.file_name
+  );
+
+  const fileType = cleanText(
+    body?.file_type ?? current.file_type,
+    150
+  );
+
+  const fileSize = Number(
+    body?.file_size ?? current.file_size
+  );
+
+  const published =
+    typeof body?.published === "boolean"
+      ? body.published
+      : current.published;
+
+  if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid content type.",
+    });
+  }
+
+  if (!title) {
+    return res.status(400).json({
+      success: false,
+      error: "Title is required.",
+    });
+  }
+
+  if (!isValidBlobUrl(fileUrl)) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid Vercel Blob URL.",
+    });
+  }
+
+  const fileExtension = getFileExtension(fileName);
+
+  if (
+    !ALLOWED_TYPES.has(fileType) &&
+    !ALLOWED_EXTENSIONS.has(fileExtension)
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "Unsupported file type.",
+    });
+  }
+
+  if (
+    !Number.isSafeInteger(fileSize) ||
+    fileSize <= 0 ||
+    fileSize > MAX_BLOB_SIZE
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid file size.",
+    });
+  }
+
+  if (contentType === "profile_image" && published) {
     await sql`
       UPDATE portfolio_content
       SET
@@ -460,6 +589,15 @@ async function updateContent(req, res, sql) {
   const rows = await sql`
     UPDATE portfolio_content
     SET
+      content_type = ${contentType},
+      title = ${title},
+      description = ${description},
+      objective = ${objective},
+      category = ${category},
+      file_url = ${fileUrl},
+      file_name = ${fileName},
+      file_type = ${fileType},
+      file_size = ${fileSize},
       published = ${published},
       updated_at = NOW()
     WHERE id = ${id}

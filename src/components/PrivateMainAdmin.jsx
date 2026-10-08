@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import {
   Check,
+  Edit3,
   FileText,
   Image,
   LogIn,
@@ -56,6 +57,8 @@ export default function PrivateMainAdmin({ onBack }) {
   const [loginError, setLoginError] = useState("");
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
   const [form, setForm] = useState({
     content_type: "report",
@@ -153,6 +156,7 @@ export default function PrivateMainAdmin({ onBack }) {
     }
 
     setUploading(true);
+    setUploadProgress(0);
     setMessage("");
 
     try {
@@ -174,6 +178,7 @@ export default function PrivateMainAdmin({ onBack }) {
             Math.min(100, Math.round(percentage))
           );
 
+          setUploadProgress(progress);
           setMessage(`Uploading ${progress}%...`);
         },
       });
@@ -210,6 +215,7 @@ export default function PrivateMainAdmin({ onBack }) {
         );
       }
 
+      setUploadProgress(100);
       setMessage("Content uploaded successfully.");
 
       setForm({
@@ -237,6 +243,182 @@ export default function PrivateMainAdmin({ onBack }) {
       );
     } finally {
       setUploading(false);
+      setUploadProgress(null);
+    }
+  }
+
+  function startEditing(item) {
+    setEditingId(item.id);
+
+    setForm({
+      content_type: item.content_type || "report",
+      title: item.title || "",
+      description: item.description || "",
+      objective: item.objective || "",
+      category: item.category || "",
+      published: Boolean(item.published),
+      file: null,
+    });
+
+    setMessage(
+      `Editing "${item.title}". Choose a new file only if you want to replace the current one.`
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+
+    setForm({
+      content_type: "report",
+      title: "",
+      description: "",
+      objective: "",
+      category: "",
+      published: false,
+      file: null,
+    });
+
+    const fileInput = document.getElementById(
+      "private-file-input"
+    );
+
+    if (fileInput) {
+      fileInput.value = "";
+    }
+
+    setMessage("");
+  }
+
+  async function saveEdit(event) {
+    event.preventDefault();
+
+    if (!editingId) {
+      return;
+    }
+
+    if (!form.title.trim()) {
+      setMessage("Title is required.");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+
+    try {
+      const currentItem = items.find(
+        (item) => item.id === editingId
+      );
+
+      if (!currentItem) {
+        throw new Error("The content item could not be found.");
+      }
+
+      let fileData = {
+        file_url: currentItem.file_url,
+        file_name: currentItem.file_name,
+        file_type: currentItem.file_type,
+        file_size: currentItem.file_size,
+      };
+
+      if (form.file) {
+        const file = form.file;
+
+        setMessage("Preparing replacement file upload...");
+
+        const blob = await upload(file.name, file, {
+          access: "public",
+          handleUploadUrl: "/api/private-admin-blob-upload",
+          clientPayload: JSON.stringify({
+            content_type: form.content_type,
+            file_name: file.name,
+          }),
+          multipart: true,
+          onUploadProgress: ({ percentage }) => {
+            const progress = Math.max(
+              0,
+              Math.min(100, Math.round(percentage))
+            );
+
+            setUploadProgress(progress);
+            setMessage(
+              `Uploading replacement ${progress}%...`
+            );
+          },
+        });
+
+        fileData = {
+          file_url: blob.url,
+          file_name: file.name,
+          file_type: file.type || blob.contentType,
+          file_size: file.size,
+        };
+      }
+
+      setMessage("Saving content changes...");
+
+      const response = await fetch(
+        `/api/private-admin-content?id=${editingId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content_type: form.content_type,
+            title: form.title,
+            description: form.description,
+            objective: form.objective,
+            category: form.category,
+            published: form.published,
+            ...fileData,
+          }),
+        }
+      );
+
+      const data = await readApiResponse(response);
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.error || "Unable to save content changes."
+        );
+      }
+
+      setEditingId(null);
+
+      setForm({
+        content_type: "report",
+        title: "",
+        description: "",
+        objective: "",
+        category: "",
+        published: false,
+        file: null,
+      });
+
+      const fileInput = document.getElementById(
+        "private-file-input"
+      );
+
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
+      setMessage("Content updated successfully.");
+
+      await loadContent();
+    } catch (error) {
+      setMessage(
+        error?.message ||
+          "Unable to update portfolio content."
+      );
+    } finally {
+      setUploading(false);
+      setUploadProgress(null);
     }
   }
 
@@ -415,13 +597,17 @@ export default function PrivateMainAdmin({ onBack }) {
           <div className="private-card-heading">
             <div>
               <span className="private-kicker">CONTENT</span>
-              <h2>Add Portfolio Content</h2>
+              <h2>
+                {editingId
+                  ? "Edit Portfolio Content"
+                  : "Add Portfolio Content"}
+              </h2>
             </div>
 
             <Plus size={20} />
           </div>
 
-          <form onSubmit={uploadContent}>
+          <form onSubmit={editingId ? saveEdit : uploadContent}>
             <label>
               Content Type
               <select
@@ -538,10 +724,80 @@ export default function PrivateMainAdmin({ onBack }) {
               type="submit"
               disabled={uploading}
             >
-              <Upload size={17} />
-              {uploading ? "Uploading..." : "Upload Content"}
+              {editingId ? (
+                <Edit3 size={17} />
+              ) : (
+                <Upload size={17} />
+              )}
+
+              {uploading
+                ? editingId
+                  ? "Saving..."
+                  : "Uploading..."
+                : editingId
+                  ? "Save Changes"
+                  : "Upload Content"}
             </button>
+
+            {editingId && (
+              <button
+                className="private-secondary"
+                type="button"
+                onClick={cancelEditing}
+                disabled={uploading}
+              >
+                <X size={17} />
+                Cancel Edit
+              </button>
+            )}
           </form>
+
+          {uploadProgress !== null && (
+            <div
+              className="private-upload-progress"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="private-upload-progress-header">
+                <div className="private-upload-progress-info">
+                  <strong>
+                    {editingId
+                      ? "Replacing file"
+                      : "Uploading file"}
+                  </strong>
+
+                  <span>
+                    {form.file?.name ||
+                      "Preparing file..."}
+                  </span>
+                </div>
+
+                <strong className="private-upload-progress-percent">
+                  {uploadProgress}%
+                </strong>
+              </div>
+
+              <div
+                className="private-upload-progress-track"
+                aria-hidden="true"
+              >
+                <div
+                  className="private-upload-progress-fill"
+                  style={{
+                    width: `${uploadProgress}%`,
+                  }}
+                />
+              </div>
+
+              <div className="private-upload-progress-footer">
+                <span>
+                  {uploadProgress === 100
+                    ? "Upload complete — saving..."
+                    : `${uploadProgress}% uploaded`}
+                </span>
+              </div>
+            </div>
+          )}
 
           {message && (
             <div className="private-message">
@@ -615,6 +871,15 @@ export default function PrivateMainAdmin({ onBack }) {
                   </div>
 
                   <div className="private-item-actions">
+                    <button
+                      type="button"
+                      onClick={() => startEditing(item)}
+                      aria-label={`Edit ${item.title}`}
+                    >
+                      <Edit3 size={16} />
+                      Edit
+                    </button>
+
                     {item.file_url && (
                       <a
                         href={item.file_url}
