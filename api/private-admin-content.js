@@ -5,12 +5,40 @@ import { neon } from "@neondatabase/serverless";
 import { requirePrivateAdmin } from "./_private-admin-auth.js";
 
 const ALLOWED_TYPES = new Set([
+  // Documents
   "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+  // Images
   "image/jpeg",
   "image/png",
   "image/webp",
+  "image/svg+xml",
+
+  // Code / text
+  "text/plain",
+  "text/html",
+  "text/css",
+  "text/javascript",
+  "application/javascript",
+  "application/json",
+  "application/xml",
+  "text/xml",
+  "text/markdown",
+  "application/sql",
+  "text/x-python",
+  "application/x-python-code",
+  "text/x-java-source",
+  "text/x-c",
+  "text/x-c++src",
+  "text/x-csharp",
+  "text/x-php",
+  "text/x-rust",
+  "text/x-go",
+  "text/x-shellscript",
+  "application/x-sh",
+  "application/dart",
 ]);
 
 const ALLOWED_CONTENT_TYPES = new Set([
@@ -18,10 +46,58 @@ const ALLOWED_CONTENT_TYPES = new Set([
   "certificate",
   "cv",
   "project_document",
+  "project_code",
   "profile_image",
 ]);
 
-const MAX_BLOB_SIZE = 5 * 1024 * 1024 * 1024 * 1024;
+const ALLOWED_EXTENSIONS = new Set([
+  "pdf",
+  "doc",
+  "docx",
+
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "svg",
+
+  "py",
+  "html",
+  "htm",
+  "css",
+  "js",
+  "jsx",
+  "ts",
+  "tsx",
+  "dart",
+  "java",
+  "php",
+  "c",
+  "cpp",
+  "cs",
+  "rs",
+  "go",
+  "sh",
+  "bash",
+  "sql",
+  "json",
+  "xml",
+  "md",
+  "txt",
+]);
+
+function getFileExtension(fileName) {
+  const name = String(fileName || "").toLowerCase();
+  const index = name.lastIndexOf(".");
+
+  if (index === -1) {
+    return "";
+  }
+
+  return name.slice(index + 1);
+}
+
+const MAX_BLOB_SIZE = 100 * 1024 * 1024;
 
 function cleanText(value, max = 20000) {
   return String(value || "").trim().slice(0, max);
@@ -255,11 +331,15 @@ async function createContent(req, res, sql) {
     });
   }
 
-  if (!ALLOWED_TYPES.has(fileType)) {
+  const fileExtension = getFileExtension(fileName);
+
+  if (
+    !ALLOWED_TYPES.has(fileType) &&
+    !ALLOWED_EXTENSIONS.has(fileExtension)
+  ) {
     return res.status(400).json({
       success: false,
-      error:
-        "Unsupported file type. Use PDF, DOC, DOCX, JPG, PNG or WebP.",
+      error: "Unsupported file type.",
     });
   }
 

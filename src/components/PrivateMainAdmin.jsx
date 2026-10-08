@@ -18,6 +18,7 @@ const CONTENT_TYPES = [
   ["certificate", "Certificate"],
   ["cv", "CV"],
   ["project_document", "Project Documentation"],
+  ["project_code", "Project Code"],
   ["profile_image", "Profile Image"],
 ];
 
@@ -506,7 +507,7 @@ export default function PrivateMainAdmin({ onBack }) {
               <input
                 id="private-file-input"
                 type="file"
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.svg,.py,.html,.htm,.css,.js,.jsx,.ts,.tsx,.dart,.java,.php,.c,.cpp,.cs,.rs,.go,.sh,.bash,.sql,.json,.xml,.md,.txt"
                 onChange={(event) =>
                   updateForm(
                     "file",
