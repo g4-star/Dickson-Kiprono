@@ -39,6 +39,7 @@ const ALLOWED_TYPES = new Set([
   "text/x-shellscript",
   "application/x-sh",
   "application/dart",
+  "application/octet-stream",
 ]);
 
 const ALLOWED_CONTENT_TYPES = new Set([
