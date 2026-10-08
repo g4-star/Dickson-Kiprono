@@ -461,6 +461,47 @@ export default function PrivateMainAdmin({ onBack }) {
     }
   }
 
+
+  async function togglePinned(item) {
+    try {
+      setMessage("");
+
+      const response = await fetch(
+        `/api/private-admin-content?id=${item.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pinned: !item.pinned,
+          }),
+        }
+      );
+
+      const data = await readApiResponse(response);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to update pin status."
+        );
+      }
+
+      setMessage(
+        item.pinned
+          ? "Content unpinned successfully."
+          : "Content pinned successfully."
+      );
+
+      await loadContent();
+    } catch (error) {
+      setMessage(
+        error?.message ||
+          "Unable to update pin status."
+      );
+    }
+  }
+
   async function deleteItem(id) {
     if (!window.confirm("Delete this content permanently?")) {
       return;
@@ -858,6 +899,12 @@ export default function PrivateMainAdmin({ onBack }) {
                   </div>
 
                   <div className="private-item-status">
+                    {item.pinned && (
+                      <span className="pinned">
+                        📌 Pinned
+                      </span>
+                    )}
+
                     {item.published ? (
                       <span className="published">
                         <Check size={14} />
@@ -871,6 +918,31 @@ export default function PrivateMainAdmin({ onBack }) {
                   </div>
 
                   <div className="private-item-actions">
+                    <button
+                      type="button"
+                      onClick={() => togglePinned(item)}
+                      className={
+                        item.pinned
+                          ? "pinned-action"
+                          : ""
+                      }
+                      aria-label={
+                        item.pinned
+                          ? `Unpin ${item.title}`
+                          : `Pin ${item.title}`
+                      }
+                      title={
+                        item.pinned
+                          ? "Unpin"
+                          : "Pin for later"
+                      }
+                    >
+                      <span aria-hidden="true">
+                        {item.pinned ? "📌" : "📍"}
+                      </span>
+                      {item.pinned ? "Unpin" : "Pin"}
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => startEditing(item)}

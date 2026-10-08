@@ -149,9 +149,15 @@ async function ensureTable(sql) {
       file_type TEXT,
       file_size BIGINT DEFAULT 0,
       published BOOLEAN NOT NULL DEFAULT FALSE,
+      pinned BOOLEAN NOT NULL DEFAULT FALSE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE;
   `;
 
   await sql`
@@ -196,7 +202,7 @@ async function listContent(res, sql) {
   const rows = await sql`
     SELECT *
     FROM portfolio_content
-    ORDER BY created_at DESC;
+    ORDER BY pinned DESC, created_at DESC;
   `;
 
   return res.status(200).json({
@@ -437,6 +443,44 @@ async function updateContent(req, res, sql) {
   }
 
   const current = content[0];
+
+  // Pin / unpin without affecting publish or edit state.
+  if (
+    "pinned" in (body || {}) &&
+    !(
+      "content_type" in (body || {}) ||
+      "title" in (body || {}) ||
+      "description" in (body || {}) ||
+      "objective" in (body || {}) ||
+      "category" in (body || {}) ||
+      "file_url" in (body || {}) ||
+      "file_name" in (body || {}) ||
+      "file_type" in (body || {}) ||
+      "file_size" in (body || {})
+    ) &&
+    !("published" in (body || {}))
+  ) {
+    if (typeof body.pinned !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        error: "A valid pinned value is required.",
+      });
+    }
+
+    const rows = await sql`
+      UPDATE portfolio_content
+      SET
+        pinned = ${body.pinned},
+        updated_at = NOW()
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    return res.status(200).json({
+      success: true,
+      item: rows[0],
+    });
+  }
 
   const isFullEdit =
     "content_type" in (body || {}) ||

@@ -478,3 +478,33 @@
   font-size: 12px;
   font-weight: 700;
 }
+
+/* --------------------------------------------------
+   PINNED CONTENT
+-------------------------------------------------- */
+
+.private-item-status .pinned {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 5px;
+  color: var(--accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.private-item-actions .pinned-action {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.private-item-actions button[title="Pin for later"] {
+  opacity: .85;
+}
+
+.private-item-actions button[title="Unpin"] {
+  opacity: 1;
+}
