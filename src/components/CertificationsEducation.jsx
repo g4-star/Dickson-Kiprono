@@ -286,9 +286,124 @@ export default function CertificationsEducation({ onBack }) {
           )}
         </section>
 
+        <section className="ce-section ce-capability">
+          <div className="ce-section-heading">
+            <span>04 / CAPABILITY OVER CREDENTIALS</span>
+            <h2>What you can do matters.</h2>
+            <p>
+              Formal education can provide a strong foundation, but cybersecurity
+              is ultimately a field where knowledge has to translate into
+              practical capability.
+            </p>
+          </div>
+
+          <div className="ce-capability-layout">
+            <div className="ce-capability-lead">
+              <span>THE PRINCIPLE</span>
+              <h3>
+                Skills are demonstrated,
+                <br />
+                <em>not simply declared.</em>
+              </h3>
+            </div>
+
+            <div className="ce-capability-copy">
+              <p>
+                My cybersecurity journey has been built through focused
+                professional training, certifications, practical laboratories,
+                technical research and continuous hands-on learning.
+              </p>
+
+              <p>
+                My formal academic path may not follow the traditional degree
+                route, but that does not define the limits of what I can learn,
+                investigate or accomplish. I have deliberately invested in
+                cybersecurity education that develops practical understanding
+                rather than relying only on academic titles.
+              </p>
+
+              <p>
+                Through certifications, security labs, Capture The Flag
+                challenges, technical projects and independent research, I
+                continue to develop the ability to analyze systems, understand
+                vulnerabilities, investigate security problems and think
+                defensively.
+              </p>
+
+              <p>
+                I believe credentials are valuable because they represent
+                completed learning and verified effort. But credentials become
+                meaningful when they are supported by practical knowledge,
+                curiosity, discipline and the ability to apply what has been
+                learned.
+              </p>
+
+              <p>
+                That is the standard I hold myself to: keep learning, keep
+                practicing, keep building and keep improving. My goal is not
+                simply to collect certificates. It is to turn every course,
+                laboratory and challenge into capability that can be applied to
+                real security problems.
+              </p>
+            </div>
+          </div>
+
+          <div className="ce-capability-grid">
+            <article>
+              <span>01</span>
+              <h3>Continuous Learning</h3>
+              <p>
+                Cybersecurity changes constantly. I treat learning as an
+                ongoing process rather than something that ends with a
+                certificate.
+              </p>
+            </article>
+
+            <article>
+              <span>02</span>
+              <h3>Practical Application</h3>
+              <p>
+                I focus on turning concepts into hands-on experience through
+                security laboratories, projects, challenges and technical
+                experimentation.
+              </p>
+            </article>
+
+            <article>
+              <span>03</span>
+              <h3>Proof Through Work</h3>
+              <p>
+                My certifications, lab reports, projects and security work
+                provide tangible evidence of the areas I have studied and the
+                skills I continue to develop.
+              </p>
+            </article>
+
+            <article>
+              <span>04</span>
+              <h3>Growth Mindset</h3>
+              <p>
+                I do not consider my current level a final destination. Every
+                vulnerability, failed attempt and new technology is another
+                opportunity to become better.
+              </p>
+            </article>
+          </div>
+
+          <div className="ce-capability-statement">
+            <strong>
+              I don't rely on a title to define my ability.
+            </strong>
+            <p>
+              I rely on continuous learning, practical work, discipline,
+              problem solving and measurable results.
+            </p>
+          </div>
+        </section>
+
         <section className="ce-section ce-achievements">
           <div className="ce-section-heading">
-            <span>03 / ACHIEVEMENTS</span>
+            <span>05 / ACHIEVEMENTS</span>
             <h2>Milestones beyond certification.</h2>
             <p>
               Professional milestones, recognitions and other verified
@@ -358,7 +473,7 @@ export default function CertificationsEducation({ onBack }) {
 
         <section className="ce-section ce-learning">
           <div className="ce-section-heading">
-            <span>04 / CONTINUOUS LEARNING</span>
+            <span>06 / CONTINUOUS LEARNING</span>
             <h2>Learning does not stop at certification.</h2>
             <p>
               Cybersecurity changes continuously. Practical laboratories,
@@ -388,7 +503,7 @@ export default function CertificationsEducation({ onBack }) {
 
         <section className="ce-section ce-development">
           <div className="ce-development-copy">
-            <span>05 / CURRENT DEVELOPMENT</span>
+            <span>07 / CURRENT DEVELOPMENT</span>
 
             <h2>
               Building deeper

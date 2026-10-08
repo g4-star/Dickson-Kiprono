@@ -416,6 +416,15 @@
     grid-template-columns: 1fr;
     gap: 60px;
   }
+
+  .ce-capability-layout {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .ce-capability-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
@@ -450,6 +459,14 @@
     padding: 26px;
   }
 
+  .ce-capability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ce-capability-statement {
+    padding: 30px 26px;
+  }
+
   .ce-final {
     padding: 90px 22px;
   }
@@ -459,6 +476,116 @@
   }
 }
 
+
+
+/* --------------------------------------------------
+   CAPABILITY OVER CREDENTIALS
+-------------------------------------------------- */
+
+.ce-capability-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr);
+  gap: 80px;
+  padding: 55px 0;
+  border-top: 1px solid rgba(128, 128, 128, .22);
+  border-bottom: 1px solid rgba(128, 128, 128, .22);
+}
+
+.ce-capability-lead > span {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: #087f8c;
+}
+
+.ce-capability-lead h3 {
+  margin: 25px 0 0;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -.04em;
+  font-weight: 500;
+}
+
+.ce-capability-lead h3 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+
+.ce-capability-copy {
+  max-width: 720px;
+}
+
+.ce-capability-copy p {
+  margin: 0 0 22px;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.ce-capability-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.ce-capability-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.ce-capability-grid article {
+  min-height: 230px;
+  padding: 28px;
+  border: 1px solid rgba(128, 128, 128, .22);
+  background: rgba(128, 128, 128, .035);
+}
+
+.ce-capability-grid article > span {
+  display: block;
+  margin-bottom: 55px;
+  color: #087f8c;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ce-capability-grid h3 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.ce-capability-grid p {
+  margin: 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.ce-capability-statement {
+  margin-top: 18px;
+  padding: 42px;
+  border: 1px solid rgba(8, 127, 140, .35);
+  background: rgba(8, 127, 140, .035);
+}
+
+.ce-capability-statement strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 500;
+  letter-spacing: -.025em;
+}
+
+.ce-capability-statement p {
+  margin: 0;
+  color: #888;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: .05em;
+  line-height: 1.8;
+}
 
 /* --------------------------------------------------
    DATABASE-DRIVEN CREDENTIALS
