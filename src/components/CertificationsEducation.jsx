@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
   Award,
-  BookOpen,
   CheckCircle2,
   ExternalLink,
   GraduationCap,
@@ -27,17 +27,6 @@ const education = [
       "Practical security laboratories",
       "Technical investigation and reporting",
     ],
-  },
-];
-
-const certifications = [
-  {
-    number: "01",
-    title: "Introduction to Cybersecurity",
-    issuer: "Cisco",
-    category: "Cybersecurity Fundamentals",
-    description:
-      "Foundational cybersecurity learning covering security concepts, threats, defensive thinking and the role of cybersecurity in modern digital environments.",
   },
 ];
 
@@ -74,6 +63,63 @@ const developmentAreas = [
 ];
 
 export default function CertificationsEducation({ onBack }) {
+  const [certifications, setCertifications] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+  const [credentialsLoading, setCredentialsLoading] = useState(true);
+  const [credentialsError, setCredentialsError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCredentials() {
+      try {
+        setCredentialsLoading(true);
+        setCredentialsError("");
+
+        const response = await fetch("/api/public-certificates");
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.error || "Unable to load credentials."
+          );
+        }
+
+        if (!active) return;
+
+        setCertifications(
+          Array.isArray(data.certifications)
+            ? data.certifications
+            : []
+        );
+
+        setAchievements(
+          Array.isArray(data.achievements)
+            ? data.achievements
+            : []
+        );
+      } catch (error) {
+        console.error("Credential loading error:", error);
+
+        if (active) {
+          setCredentialsError(
+            "Unable to load certifications and achievements."
+          );
+        }
+      } finally {
+        if (active) {
+          setCredentialsLoading(false);
+        }
+      }
+    }
+
+    loadCredentials();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="ce-page">
       <header className="ce-header">
@@ -105,17 +151,34 @@ export default function CertificationsEducation({ onBack }) {
 
           <div className="ce-hero-side">
             <div>
-              <strong>01</strong>
+              <strong>
+                {String(education.length).padStart(2, "0")}
+              </strong>
               <span>EDUCATION</span>
             </div>
 
             <div>
-              <strong>01</strong>
-              <span>CERTIFICATION</span>
+              <strong>
+                {credentialsLoading
+                  ? "--"
+                  : String(certifications.length).padStart(2, "0")}
+              </strong>
+              <span>CERTIFICATIONS</span>
             </div>
 
             <div>
-              <strong>03+</strong>
+              <strong>
+                {credentialsLoading
+                  ? "--"
+                  : String(achievements.length).padStart(2, "0")}
+              </strong>
+              <span>ACHIEVEMENTS</span>
+            </div>
+
+            <div>
+              <strong>
+                {String(learningPlatforms.length).padStart(2, "0")}+
+              </strong>
               <span>LEARNING PLATFORMS</span>
             </div>
           </div>
@@ -163,29 +226,139 @@ export default function CertificationsEducation({ onBack }) {
             <h2>Credentials and verified learning.</h2>
           </div>
 
-          <div className="ce-cert-grid">
-            {certifications.map((item) => (
-              <article className="ce-cert-card" key={item.number}>
-                <div className="ce-cert-top">
-                  <span>{item.number}</span>
-                  <Award size={22} />
-                </div>
+          {credentialsLoading ? (
+            <div className="ce-empty-state">
+              LOADING VERIFIED CREDENTIALS...
+            </div>
+          ) : credentialsError ? (
+            <div className="ce-empty-state">
+              {credentialsError}
+            </div>
+          ) : certifications.length === 0 ? (
+            <div className="ce-empty-state">
+              NO PUBLISHED CERTIFICATIONS YET.
+            </div>
+          ) : (
+            <div className="ce-cert-grid">
+              {certifications.map((item, index) => (
+                <article
+                  className="ce-cert-card"
+                  key={item.id}
+                >
+                  <div className="ce-cert-top">
+                    <span>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <Award size={22} />
+                  </div>
 
-                <span className="ce-card-label">{item.issuer}</span>
+                  {item.issuer && (
+                    <span className="ce-card-label">
+                      {item.issuer}
+                    </span>
+                  )}
 
-                <h3>{item.title}</h3>
+                  <h3>{item.title}</h3>
 
-                <strong>{item.category}</strong>
+                  {item.category && (
+                    <strong>{item.category}</strong>
+                  )}
 
-                <p>{item.description}</p>
-              </article>
-            ))}
+                  {item.description && (
+                    <p>{item.description}</p>
+                  )}
+
+                  {item.file_url && (
+                    <div className="ce-credential-actions">
+                      <a
+                        href={item.file_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        VIEW CREDENTIAL
+                        <ExternalLink size={13} />
+                      </a>
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="ce-section ce-achievements">
+          <div className="ce-section-heading">
+            <span>03 / ACHIEVEMENTS</span>
+            <h2>Milestones beyond certification.</h2>
+            <p>
+              Professional milestones, recognitions and other verified
+              achievements that contribute to my cybersecurity journey.
+            </p>
           </div>
+
+          {credentialsLoading ? (
+            <div className="ce-empty-state">
+              LOADING VERIFIED ACHIEVEMENTS...
+            </div>
+          ) : credentialsError ? (
+            <div className="ce-empty-state">
+              {credentialsError}
+            </div>
+          ) : achievements.length === 0 ? (
+            <div className="ce-empty-state">
+              NO PUBLISHED ACHIEVEMENTS YET.
+            </div>
+          ) : (
+            <div className="ce-cert-grid">
+              {achievements.map((item, index) => (
+                <article
+                  className="ce-cert-card"
+                  key={item.id}
+                >
+                  <div className="ce-cert-top">
+                    <span>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <Award size={22} />
+                  </div>
+
+                  {item.issuer && (
+                    <span className="ce-card-label">
+                      {item.issuer}
+                    </span>
+                  )}
+
+                  <h3>{item.title}</h3>
+
+                  {item.category && (
+                    <strong>{item.category}</strong>
+                  )}
+
+                  {item.description && (
+                    <p>{item.description}</p>
+                  )}
+
+                  {item.file_url && (
+                    <div className="ce-credential-actions">
+                      <a
+                        href={item.file_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        VIEW CREDENTIAL
+                        <ExternalLink size={13} />
+                      </a>
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="ce-section ce-learning">
           <div className="ce-section-heading">
-            <span>03 / CONTINUOUS LEARNING</span>
+            <span>04 / CONTINUOUS LEARNING</span>
             <h2>Learning does not stop at certification.</h2>
             <p>
               Cybersecurity changes continuously. Practical laboratories,
@@ -215,7 +388,7 @@ export default function CertificationsEducation({ onBack }) {
 
         <section className="ce-section ce-development">
           <div className="ce-development-copy">
-            <span>04 / CURRENT DEVELOPMENT</span>
+            <span>05 / CURRENT DEVELOPMENT</span>
 
             <h2>
               Building deeper

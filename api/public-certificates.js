@@ -24,6 +24,7 @@ export default async function handler(req, res) {
       SELECT
         id,
         title,
+        issuer,
         description,
         category,
         file_url,
@@ -36,8 +37,22 @@ export default async function handler(req, res) {
       ORDER BY created_at DESC;
     `;
 
+    const certifications = rows.filter(
+      (item) =>
+        String(item.category || "").trim().toLowerCase() ===
+        "certification"
+    );
+
+    const achievements = rows.filter(
+      (item) =>
+        String(item.category || "").trim().toLowerCase() ===
+        "achievement"
+    );
+
     return res.status(200).json({
       success: true,
+      certifications,
+      achievements,
       certificates: rows,
     });
   } catch (error) {

@@ -141,6 +141,7 @@ async function ensureTable(sql) {
       id SERIAL PRIMARY KEY,
       content_type VARCHAR(40) NOT NULL,
       title TEXT NOT NULL,
+      issuer TEXT DEFAULT '',
       description TEXT DEFAULT '',
       objective TEXT DEFAULT '',
       category TEXT DEFAULT '',
@@ -153,6 +154,11 @@ async function ensureTable(sql) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS issuer TEXT DEFAULT '';
   `;
 
   await sql`
@@ -308,6 +314,7 @@ async function createContent(req, res, sql) {
 
   const contentType = cleanText(body?.content_type, 40);
   const title = cleanText(body?.title, 300);
+  const issuer = cleanText(body?.issuer, 300);
   const description = cleanText(body?.description);
   const objective = cleanText(body?.objective);
   const category = cleanText(body?.category, 300);
@@ -375,6 +382,7 @@ async function createContent(req, res, sql) {
     INSERT INTO portfolio_content (
       content_type,
       title,
+      issuer,
       description,
       objective,
       category,
@@ -387,6 +395,7 @@ async function createContent(req, res, sql) {
     VALUES (
       ${contentType},
       ${title},
+      ${issuer},
       ${description},
       ${objective},
       ${category},
@@ -453,6 +462,7 @@ async function updateContent(req, res, sql) {
       "description" in (body || {}) ||
       "objective" in (body || {}) ||
       "category" in (body || {}) ||
+      "issuer" in (body || {}) ||
       "file_url" in (body || {}) ||
       "file_name" in (body || {}) ||
       "file_type" in (body || {}) ||
@@ -488,6 +498,7 @@ async function updateContent(req, res, sql) {
     "description" in (body || {}) ||
     "objective" in (body || {}) ||
     "category" in (body || {}) ||
+    "issuer" in (body || {}) ||
     "file_url" in (body || {}) ||
     "file_name" in (body || {}) ||
     "file_type" in (body || {}) ||
@@ -536,6 +547,11 @@ async function updateContent(req, res, sql) {
 
   const title = cleanText(
     body?.title ?? current.title,
+    300
+  );
+
+  const issuer = cleanText(
+    body?.issuer ?? current.issuer,
     300
   );
 
@@ -635,6 +651,7 @@ async function updateContent(req, res, sql) {
     SET
       content_type = ${contentType},
       title = ${title},
+      issuer = ${issuer},
       description = ${description},
       objective = ${objective},
       category = ${category},

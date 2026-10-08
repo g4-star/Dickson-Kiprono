@@ -66,6 +66,7 @@ export default function PrivateMainAdmin({ onBack }) {
     description: "",
     objective: "",
     category: "",
+    issuer: "",
     published: false,
     file: null,
   });
@@ -136,10 +137,38 @@ export default function PrivateMainAdmin({ onBack }) {
   }
 
   function updateForm(name, value) {
-    setForm((current) => ({
-      ...current,
-      [name]: value,
-    }));
+    setForm((current) => {
+      if (name === "content_type") {
+        // Certificates use a controlled credential subtype.
+        // Other content types keep their normal free-text category.
+        if (value === "certificate") {
+          return {
+            ...current,
+            content_type: value,
+            category:
+              current.category === "Certification" ||
+              current.category === "Achievement"
+                ? current.category
+                : "",
+          };
+        }
+
+        return {
+          ...current,
+          content_type: value,
+          category:
+            current.category === "Certification" ||
+            current.category === "Achievement"
+              ? ""
+              : current.category,
+        };
+      }
+
+      return {
+        ...current,
+        [name]: value,
+      };
+    });
   }
 
   async function uploadContent(event) {
@@ -195,6 +224,7 @@ export default function PrivateMainAdmin({ onBack }) {
           body: JSON.stringify({
             content_type: form.content_type,
             title: form.title,
+            issuer: form.issuer,
             description: form.description,
             objective: form.objective,
             category: form.category,
@@ -224,6 +254,7 @@ export default function PrivateMainAdmin({ onBack }) {
         description: "",
         objective: "",
         category: "",
+        issuer: "",
         published: false,
         file: null,
       });
@@ -253,6 +284,7 @@ export default function PrivateMainAdmin({ onBack }) {
     setForm({
       content_type: item.content_type || "report",
       title: item.title || "",
+      issuer: item.issuer || "",
       description: item.description || "",
       objective: item.objective || "",
       category: item.category || "",
@@ -371,6 +403,7 @@ export default function PrivateMainAdmin({ onBack }) {
           body: JSON.stringify({
             content_type: form.content_type,
             title: form.title,
+            issuer: form.issuer,
             description: form.description,
             objective: form.objective,
             category: form.category,
@@ -396,6 +429,7 @@ export default function PrivateMainAdmin({ onBack }) {
         description: "",
         objective: "",
         category: "",
+        issuer: "",
         published: false,
         file: null,
       });
@@ -715,18 +749,59 @@ export default function PrivateMainAdmin({ onBack }) {
               />
             </label>
 
+            {form.content_type === "certificate" && (
+              <label>
+                Issuer / Organization
+                <input
+                  value={form.issuer}
+                  onChange={(event) =>
+                    updateForm(
+                      "issuer",
+                      event.target.value
+                    )
+                  }
+                  placeholder="e.g. Cisco, Fortinet, IBM, AfriEthics"
+                />
+              </label>
+            )}
+
             <label>
-              Category
-              <input
-                value={form.category}
-                onChange={(event) =>
-                  updateForm(
-                    "category",
-                    event.target.value
-                  )
-                }
-                placeholder="e.g. Network Security"
-              />
+              {form.content_type === "certificate"
+                ? "Credential Type"
+                : "Category"}
+
+              {form.content_type === "certificate" ? (
+                <select
+                  value={form.category}
+                  onChange={(event) =>
+                    updateForm(
+                      "category",
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Select credential type
+                  </option>
+                  <option value="Certification">
+                    Certification
+                  </option>
+                  <option value="Achievement">
+                    Achievement
+                  </option>
+                </select>
+              ) : (
+                <input
+                  value={form.category}
+                  onChange={(event) =>
+                    updateForm(
+                      "category",
+                      event.target.value
+                    )
+                  }
+                  placeholder="e.g. Network Security"
+                />
+              )}
             </label>
 
             <label>
