@@ -18,7 +18,7 @@ const topics = [
     id: "about",
     title: "Meet Dickson",
     short: "About Dickson",
-    question: "Would you like to learn about Dickson's background and professional goals?",
+    question: "Would you like to explore Dickson's background and professional goals?",
     answer:
       "This is Dickson's About section. It introduces his background, technical interests, and professional direction.",
     keywords: ["about", "background", "who", "dickson", "bio", "profile", "goals"],
@@ -297,12 +297,52 @@ export default function PortfolioNavigator({ onNavigate }) {
     const question = input.trim().toLowerCase();
     if (!question) return;
 
+    const normalized = question.replace(/[’']/g, "").replace(/\s+/g, " ");
+
+    const hiringIntent =
+      /\b(can|could|may|should|would)\s+i\s+(hire|employ|recruit)\b/.test(normalized) ||
+      /\b(hire|hiring|employ|employment|recruit|recruiting)\b/.test(normalized) ||
+      /\b(work with dickson|bring dickson on board|offer him a job)\b/.test(normalized);
+
+    const salaryIntent =
+      /\b(salary|salaries|monthly pay|expected pay|pay expectation|compensation|remuneration|wage|wages|how much.*(earn|charge|pay)|salary expectation|salary range)\b/.test(normalized);
+
+    if (salaryIntent) {
+      setSelected(null);
+      setReply(
+        "Thanks for asking! 😊 As a starting point, expected monthly salary is around KSh 35,000–70,000, depending on the role, responsibilities, and skills required. Dickson is open to negotiation and happy to discuss a package that fits the opportunity. Feel free to explore my services and contact me so we can talk about the details."
+      );
+      setSuggestions(
+        topics.filter((topic) =>
+          ["services", "projects", "skills", "contact"].includes(topic.id)
+        )
+      );
+      setInput("");
+      setMode("explore");
+      return;
+    }
+
+    if (hiringIntent) {
+      setSelected(null);
+      setReply(
+        "Absolutely, yes! 😊 Dickson is open to exciting opportunities and collaborations. Feel free to explore his projects and see the amazing work he has been building! You can also check out his services to discover how he could help with your project or team. If you see a good fit, feel free to contact him and start a conversation!"
+      );
+      setSuggestions(
+        topics.filter((topic) =>
+          ["services", "projects", "skills", "contact"].includes(topic.id)
+        )
+      );
+      setInput("");
+      setMode("explore");
+      return;
+    }
+
     const matches = topics
       .map((topic) => ({
         topic,
         score: topic.keywords.reduce(
           (score, keyword) =>
-            score + (question.includes(keyword.toLowerCase()) ? keyword.length : 0),
+            score + (normalized.includes(keyword.toLowerCase()) ? keyword.length : 0),
           0
         ),
       }))
@@ -316,8 +356,9 @@ export default function PortfolioNavigator({ onNavigate }) {
 
     setSelected(null);
     setReply(
-      "I can guide you around the portfolio, though I don't understand every free-text question yet. Try a topic below, or ask about projects, certifications, cybersecurity, skills, services, or contact details."
+      "Hey there! 😊 Dickson's portfolio guide is here to help you explore his work. You can ask me about hiring, salary expectations, projects, cybersecurity, technical skills, education, services, or how to contact him. What would you like to know?"
     );
+    setSuggestions(shuffled(topics).slice(0, 4));
     setInput("");
   }
 
