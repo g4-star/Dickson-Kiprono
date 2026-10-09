@@ -26,6 +26,8 @@ import { portfolio } from "./data/portfolio";
 import SecurityTeam from "./components/SecurityTeam";
 import PrivateMainAdmin from "./components/PrivateMainAdmin";
 import CertificationsEducation from "./components/CertificationsEducation";
+import CVAssistant from "./components/CVAssistant";
+import PortfolioNavigator from "./components/PortfolioNavigator";
 import "./App.css";
 
 const cyberDomains = [
@@ -1314,6 +1316,9 @@ function App() {
 
 
       </main>
+
+      <CVAssistant />
+      <PortfolioNavigator onNavigate={goTo} />
 
       <footer className="footer">
         <div>
