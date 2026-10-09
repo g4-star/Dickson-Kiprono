@@ -107,6 +107,45 @@ const topics = [
 ];
 
 
+
+const contactMethods = [
+  {
+    id: "call",
+    label: "Call Dickson",
+    prompt: "Would you like to call Dickson?",
+    description: "Call Dickson at 0708209070.",
+    url: "tel:+254708209070",
+  },
+  {
+    id: "email",
+    label: "Email Dickson",
+    prompt: "Would you like to email Dickson?",
+    description: "Open an email addressed to Dickson.",
+    url: "mailto:dicksonsang434@gmail.com",
+  },
+  {
+    id: "linkedin",
+    label: "Visit Dickson's LinkedIn",
+    prompt: "Would you like to visit Dickson's LinkedIn?",
+    description: "View Dickson's professional profile.",
+    url: "https://www.linkedin.com/in/dickson-sang-265737386",
+  },
+  {
+    id: "github",
+    label: "Visit Dickson's GitHub",
+    prompt: "Would you like to visit Dickson's GitHub?",
+    description: "Explore Dickson's code and repositories.",
+    url: "https://github.com/g4-star",
+  },
+  {
+    id: "whatsapp",
+    label: "Chat on WhatsApp",
+    prompt: "Would you like to chat with Dickson on WhatsApp?",
+    description: "Open Dickson's WhatsApp contact.",
+    url: "https://wa.link/9posbe",
+  },
+];
+
 const quizBank = [
   {
     id: "hr-1", category: "hr", type: "open",
@@ -242,6 +281,7 @@ export default function PortfolioNavigator({ onNavigate }) {
   const [showSampleAnswer, setShowSampleAnswer] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
   const [quizCount, setQuizCount] = useState(0);
+  const [contactStep, setContactStep] = useState(null);
 
 
 
@@ -298,6 +338,21 @@ export default function PortfolioNavigator({ onNavigate }) {
     if (!question) return;
 
     const normalized = question.replace(/[’']/g, "").replace(/\s+/g, " ");
+
+    const contactIntent =
+      /\b(contact|reach|phone number|telephone|call him|call dickson|email him|email dickson|whatsapp|whats app|linkedin profile|github profile|how can i call|how do i call)\b/.test(normalized) ||
+      /\bdickson.?s contact\b/.test(normalized) ||
+      /\bhow.*(contact|reach|call|email)\b/.test(normalized);
+
+    if (contactIntent) {
+      setSelected(null);
+      setReply("");
+      setContactStep("choose");
+      setSuggestions([]);
+      setMode("explore");
+      setInput("");
+      return;
+    }
 
     const hiringIntent =
       /\b(can|could|may|should|would)\s+i\s+(hire|employ|recruit)\b/.test(normalized) ||
@@ -360,6 +415,31 @@ export default function PortfolioNavigator({ onNavigate }) {
     );
     setSuggestions(shuffled(topics).slice(0, 4));
     setInput("");
+  }
+
+  function handleContactYes() {
+    const method = contactMethods.find((item) => item.id === contactStep);
+    if (!method) return;
+
+    setContactStep(null);
+
+    if (method.url.startsWith("tel:") || method.url.startsWith("mailto:")) {
+      window.location.href = method.url;
+    } else {
+      window.open(method.url, "_blank", "noopener,noreferrer");
+    }
+  }
+
+  function handleContactNo() {
+    setContactStep(null);
+    setReply(
+      "No problem! 😊 Dickson's contact options will be available whenever needed."
+    );
+    setSuggestions(
+      topics.filter((topic) =>
+        ["services", "projects", "contact"].includes(topic.id)
+      )
+    );
   }
 
   function handleYes() {
@@ -555,6 +635,62 @@ export default function PortfolioNavigator({ onNavigate }) {
                   </>
                 ) : (
                   <p>Choose a practice category above to begin.</p>
+                )}
+              </div>
+            ) : contactStep ? (
+              <div className="pn-selected-topic">
+                {contactStep === "choose" ? (
+                  <>
+                    <span className="pn-topic-label">CONTACT DICKSON</span>
+                    <h4>How would you like to contact Dickson? 😊</h4>
+                    <p>Choose whichever option works best for you.</p>
+                    <div className="pn-suggestions">
+                      {contactMethods.map((method) => (
+                        <button
+                          type="button"
+                          className="pn-topic"
+                          key={method.id}
+                          onClick={() => setContactStep(method.id)}
+                        >
+                          <span>{method.label}</span>
+                          <ArrowRight size={16} />
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="pn-no"
+                      onClick={handleContactNo}
+                    >
+                      No thanks
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="pn-topic-label">CONFIRM CONTACT OPTION</span>
+                    <h4>
+                      {contactMethods.find((method) => method.id === contactStep)?.prompt}
+                    </h4>
+                    <p>
+                      {contactMethods.find((method) => method.id === contactStep)?.description}
+                    </p>
+                    <div className="pn-choice-row">
+                      <button
+                        type="button"
+                        className="pn-yes"
+                        onClick={handleContactYes}
+                      >
+                        Yes, continue <ArrowRight size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        className="pn-no"
+                        onClick={handleContactNo}
+                      >
+                        No, cancel
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             ) : selected ? (
