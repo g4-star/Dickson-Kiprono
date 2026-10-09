@@ -118,7 +118,7 @@ export default function CVAssistant() {
                     <FileText size={24} />
                   </div>
                   <div className="cv-assistant-file-info">
-                    <strong>Professional CV</strong>
+                    <strong>Dickson's CV</strong>
                     <span>{cv.name}</span>
                     <small>Latest published version</small>
                   </div>
