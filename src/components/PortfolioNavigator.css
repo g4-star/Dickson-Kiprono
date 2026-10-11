@@ -538,3 +538,51 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Compact Portfolio Navigator on small screens */
+@media (max-width: 599px) {
+  .pn-launcher {
+    min-height: 42px !important;
+    padding: 0 12px !important;
+    gap: 6px !important;
+    font-size: 11px !important;
+  }
+
+  .pn-launcher.is-open {
+    min-height: 38px !important;
+  }
+
+  .pn-panel {
+    right: max(8px, env(safe-area-inset-right)) !important;
+    left: auto !important;
+    width: calc(100vw - 16px) !important;
+    max-height: 65dvh !important;
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 48px) !important;
+    border-radius: 16px !important;
+  }
+
+  .pn-header {
+    padding: 12px !important;
+    gap: 9px !important;
+  }
+
+  .pn-avatar {
+    flex-basis: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  .pn-content {
+    padding: 13px !important;
+  }
+
+  .pn-intro h3 {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .pn-panel {
+    max-height: 60dvh !important;
+  }
+}
