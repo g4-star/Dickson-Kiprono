@@ -164,15 +164,6 @@ export default function SecurityTeam({ onBack }) {
     setAdminError("");
   }
 
-  if (showAdminPanel) {
-    return (
-      <SecurityTeamAdmin
-        initialAuthenticated={true}
-        onLogout={logoutAdmin}
-      />
-    );
-  }
-
   const heroSlides = [
     {
       label: "PEOPLE BEHIND THE WORK",
@@ -270,6 +261,15 @@ export default function SecurityTeam({ onBack }) {
   }, []);
 
   const activeSlide = slideshowImages[slide];
+
+  if (showAdminPanel) {
+    return (
+      <SecurityTeamAdmin
+        initialAuthenticated={true}
+        onLogout={logoutAdmin}
+      />
+    );
+  }
 
   return (
     <main className="security-team-page">
