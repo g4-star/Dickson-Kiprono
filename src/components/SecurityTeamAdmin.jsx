@@ -29,6 +29,11 @@ export default function SecurityTeamAdmin({
   onLogout,
 }) {
   const [members, setMembers] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryFiles, setGalleryFiles] = useState([]);
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryDeletingId, setGalleryDeletingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -48,6 +53,7 @@ export default function SecurityTeamAdmin({
 
   const profileInputRef = useRef(null);
   const imagesInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   const loadMembers = async () => {
     try {
@@ -65,6 +71,9 @@ export default function SecurityTeamAdmin({
       }
 
       setMembers(Array.isArray(data.team) ? data.team : []);
+      setGalleryImages(
+        Array.isArray(data.galleryImages) ? data.galleryImages : []
+      );
     } catch (err) {
       setError(err.message || "Unable to load team members.");
     } finally {
@@ -174,6 +183,130 @@ export default function SecurityTeamAdmin({
     setAdditionalPreviews((current) =>
       current.filter((_, imageIndex) => imageIndex !== index),
     );
+  };
+
+
+  const handleGalleryFiles = (event) => {
+    const selected = Array.from(event.target.files || []);
+    event.target.value = "";
+
+    if (!selected.length) return;
+
+    const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const invalidType = selected.find((file) => !allowed.has(file.type));
+    if (invalidType) {
+      setError("Only JPG, PNG and WebP images are allowed.");
+      return;
+    }
+
+    const tooLarge = selected.find((file) => file.size > 5 * 1024 * 1024);
+    if (tooLarge) {
+      setError("Each gallery image must be 5 MB or smaller.");
+      return;
+    }
+
+    if (galleryFiles.length + selected.length > 50) {
+      setError("Choose no more than 50 gallery images at a time.");
+      return;
+    }
+
+    setError("");
+    setGalleryFiles((current) => [...current, ...selected]);
+    setGalleryPreviews((current) => [
+      ...current,
+      ...selected.map((file) => URL.createObjectURL(file)),
+    ]);
+  };
+
+  const removePendingGalleryImage = (index) => {
+    setGalleryPreviews((current) => {
+      const preview = current[index];
+      if (preview) URL.revokeObjectURL(preview);
+      return current.filter((_, i) => i !== index);
+    });
+
+    setGalleryFiles((current) =>
+      current.filter((_, i) => i !== index),
+    );
+  };
+
+  const clearPendingGalleryImages = () => {
+    galleryPreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    setGalleryFiles([]);
+    setGalleryPreviews([]);
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
+  };
+
+  const uploadGalleryImages = async () => {
+    if (!galleryFiles.length) {
+      setError("Choose at least one image first.");
+      return;
+    }
+
+    try {
+      setGalleryUploading(true);
+      setError("");
+      setNotice("");
+
+      const formData = new FormData();
+      galleryFiles.forEach((file) => formData.append("images", file));
+
+      const response = await fetch("/api/security-team-gallery", {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Unable to upload gallery images.");
+      }
+
+      clearPendingGalleryImages();
+      setGalleryImages(
+        Array.isArray(data.galleryImages) ? data.galleryImages : [],
+      );
+      setNotice("General gallery images uploaded successfully.");
+      await loadMembers();
+    } catch (err) {
+      setError(err.message || "Unable to upload gallery images.");
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const deleteGalleryImage = async (image) => {
+    if (!window.confirm("Delete this general gallery image permanently?")) {
+      return;
+    }
+
+    try {
+      setGalleryDeletingId(image.id);
+      setError("");
+      setNotice("");
+
+      const response = await fetch(
+        `/api/security-team-gallery?id=${encodeURIComponent(image.id)}`,
+        {
+          method: "DELETE",
+          credentials: "same-origin",
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Unable to delete gallery image.");
+      }
+
+      setGalleryImages((current) =>
+        current.filter((item) => item.id !== image.id),
+      );
+      setNotice("General gallery image deleted.");
+    } catch (err) {
+      setError(err.message || "Unable to delete gallery image.");
+    } finally {
+      setGalleryDeletingId(null);
+    }
   };
 
   const saveMember = async (event) => {
@@ -642,6 +775,138 @@ export default function SecurityTeamAdmin({
               </button>
             </div>
           </form>
+        </section>
+
+
+        <section className="security-admin-gallery">
+          <div className="security-admin-section-heading">
+            <div>
+              <span className="security-admin-kicker">Independent photos</span>
+              <h2>General Security Team Gallery</h2>
+              <p className="security-admin-gallery-description">
+                Upload general team photos without linking them to a member.
+                These images can appear in the public slideshow.
+              </p>
+            </div>
+
+            <span className="security-admin-count">
+              {galleryImages.length}{" "}
+              {galleryImages.length === 1 ? "image" : "images"}
+            </span>
+          </div>
+
+          <div className="security-admin-gallery-upload">
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              hidden
+              onChange={handleGalleryFiles}
+            />
+
+            <button
+              className="security-admin-secondary"
+              type="button"
+              onClick={() => galleryInputRef.current?.click()}
+              disabled={galleryUploading}
+            >
+              <ImagePlus size={17} />
+              Choose Images
+            </button>
+
+            <span>JPG, PNG or WebP · max 5 MB per image</span>
+          </div>
+
+          {galleryPreviews.length > 0 && (
+            <>
+              <div className="security-admin-pending-images">
+                {galleryPreviews.map((preview, index) => (
+                  <div className="security-admin-image-card" key={preview}>
+                    <img src={preview} alt="Pending gallery upload" />
+                    <button
+                      type="button"
+                      className="security-admin-image-delete"
+                      onClick={() => removePendingGalleryImage(index)}
+                      aria-label="Remove pending image"
+                      disabled={galleryUploading}
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="security-admin-form-actions">
+                <button
+                  className="security-admin-secondary"
+                  type="button"
+                  onClick={clearPendingGalleryImages}
+                  disabled={galleryUploading}
+                >
+                  Clear Selection
+                </button>
+
+                <button
+                  className="security-admin-save"
+                  type="button"
+                  onClick={uploadGalleryImages}
+                  disabled={galleryUploading}
+                >
+                  {galleryUploading ? (
+                    <>
+                      <Loader2 size={17} className="security-admin-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={17} />
+                      Upload {galleryFiles.length}{" "}
+                      {galleryFiles.length === 1 ? "Image" : "Images"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+
+          {loading ? (
+            <div className="security-admin-loading">
+              <Loader2 size={20} className="security-admin-spin" />
+              Loading gallery...
+            </div>
+          ) : galleryImages.length > 0 ? (
+            <div className="security-admin-existing-images">
+              {galleryImages.map((image) => (
+                <div className="security-admin-image-card" key={image.id}>
+                  <img
+                    src={image.image_url}
+                    alt="General Security Team gallery"
+                    loading="lazy"
+                  />
+                  <button
+                    type="button"
+                    className="security-admin-image-delete"
+                    onClick={() => deleteGalleryImage(image)}
+                    disabled={galleryDeletingId === image.id}
+                    aria-label="Delete general gallery image"
+                    title="Delete image"
+                  >
+                    {galleryDeletingId === image.id ? (
+                      <Loader2 size={15} className="security-admin-spin" />
+                    ) : (
+                      <Trash2 size={15} />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="security-admin-empty-images">
+              <ImagePlus size={21} />
+              <span>No general gallery images uploaded yet.</span>
+            </div>
+          )}
         </section>
 
         <section className="security-admin-members">

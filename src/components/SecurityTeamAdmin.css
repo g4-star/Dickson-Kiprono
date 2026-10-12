@@ -173,19 +173,42 @@
 }
 
 .security-admin-editor,
-.security-admin-members {
+.security-admin-members,
+.security-admin-gallery {
   border: 1px solid rgba(148, 163, 184, 0.13);
   border-radius: 14px;
   background: rgba(15, 20, 28, 0.7);
 }
 
-.security-admin-editor {
+.security-admin-editor,
+.security-admin-gallery {
   padding: 26px;
   margin-bottom: 34px;
 }
 
 .security-admin-members {
   padding: 26px;
+}
+
+.security-admin-gallery-description {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: #8b98aa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.security-admin-gallery-upload {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.security-admin-gallery-upload > span {
+  color: #7f8b9b;
+  font-size: 11px;
 }
 
 .security-admin-section-heading {
@@ -653,7 +676,8 @@
   }
 
   .security-admin-editor,
-  .security-admin-members {
+  .security-admin-members,
+  .security-admin-gallery {
     padding: 18px;
   }
 

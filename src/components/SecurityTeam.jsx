@@ -13,6 +13,7 @@ import SecurityTeamAdmin from "./SecurityTeamAdmin";
 
 export default function SecurityTeam({ onBack }) {
   const [members, setMembers] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -41,6 +42,9 @@ export default function SecurityTeam({ onBack }) {
       }
 
       setMembers(Array.isArray(data.team) ? data.team : []);
+      setGalleryImages(
+        Array.isArray(data.galleryImages) ? data.galleryImages : []
+      );
     } catch (err) {
       console.error(err);
       setError(err.message || "The security team could not be loaded.");
@@ -78,8 +82,18 @@ export default function SecurityTeam({ onBack }) {
       }
     });
 
+    galleryImages.forEach((image) => {
+      if (image?.image_url) {
+        images.push({
+          url: image.image_url,
+          name: "Security Team",
+          type: "gallery",
+        });
+      }
+    });
+
     return images;
-  }, [members]);
+  }, [members, galleryImages]);
 
   useEffect(() => {
     setSlide(0);

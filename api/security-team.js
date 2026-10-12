@@ -52,9 +52,16 @@ export default async function handler(req, res) {
       ORDER BY st.display_order ASC, st.created_at ASC
     `;
 
+    const galleryImages = await sql`
+      SELECT id, image_url, display_order, created_at
+      FROM security_team_gallery_images
+      ORDER BY display_order ASC, created_at ASC, id ASC
+    `;
+
     return res.status(200).json({
       success: true,
       team,
+      galleryImages,
     });
   } catch (error) {
     console.error("Security team API error:", error);
