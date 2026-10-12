@@ -44,9 +44,9 @@ export const portfolio = {
       name: "JUMAA",
       type: "Mobile Application",
       description:
-        "A rental discovery and housing marketplace designed to make finding apartments more practical, localized, and accessible.",
+        "A Flutter-based rental discovery mobile application focused on apartment search, unit-level availability and location-aware housing discovery in Kenya. The project explores mobile application development, backend integration and practical digital product design.",
       details:
-        "JUMAA is a Flutter mobile application built around the idea of helping people discover available rental units at a more useful level of detail. Instead of treating housing as a generic property listing problem, the platform focuses on location-aware discovery and unit-level availability.",
+        "JUMAA is a Flutter mobile application for finding rental homes and apartments. It connects a mobile interface with Supabase and PostgreSQL services, supports county, subcounty and area filtering, and models availability at the individual rental-unit level. The project involves mobile development, API and database integration, location-aware features, connectivity handling and Firebase notifications.",
       technologies: [
         "Flutter",
         "Dart",
@@ -76,9 +76,9 @@ export const portfolio = {
       name: "JUMAA Web",
       type: "Marketing Website",
       description:
-        "A dedicated public-facing website for introducing JUMAA, explaining the product and directing users toward the mobile application.",
+        "A responsive React website presenting JUMAA, a rental discovery mobile app. It demonstrates frontend development, product communication, search engine optimization (SEO), responsive web design and clear pathways from a public product page to the mobile application.",
       details:
-        "JUMAA Web is intentionally separate from the JUMAA mobile application. It acts as the public marketing and information layer, providing a clear introduction to the product, its purpose, and the problem it is designed to address.",
+        "JUMAA Web is a separate marketing website, not the mobile application itself. Built with React and Vite, it introduces the product, explains its purpose and directs visitors toward the app. Its implementation covers responsive frontend components, page metadata, public product information and deployment through Vercel.",
       technologies: [
         "React",
         "Vite",
@@ -104,9 +104,9 @@ export const portfolio = {
       name: "TrippieAutoAI",
       type: "Automation Platform",
       description:
-        "A job-search automation system designed to organize opportunities, evaluate matches and manage application workflows.",
+        "A job-search automation project combining a Flutter dashboard and Python backend to organize job opportunities, assess candidate-role matches and track application workflows. It demonstrates workflow automation, structured data handling and backend API development.",
       details:
-        "TrippieAutoAI combines a Flutter dashboard with a Python backend and database layer. The project explores how repetitive job-search workflows can be organized through structured data, matching logic and controlled automation without fabricating qualifications or bypassing security controls.",
+        "TrippieAutoAI combines a Flutter dashboard with a Python backend, FastAPI endpoints and SQLAlchemy data models. It explores job discovery, candidate-job match scoring, application tracking and configurable approval controls. The project demonstrates API design, database-backed workflows and responsible automation, with controls intended to keep application activity reviewable.",
       technologies: [
         "Flutter",
         "Python",

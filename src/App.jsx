@@ -492,11 +492,14 @@ function App() {
               </h1>
 
               <p className="hero-description">
-                I am <strong>Dickson Kiprono</strong>, a cybersecurity-focused
-                technologist from Kenya. I investigate security problems,
-                work with Linux and networking environments, build practical
-                technical solutions and continuously develop my ability to
-                understand and protect digital systems.
+                I am <strong>Dickson Kiprono, also known as Kiprono</strong>,
+                a Kenya-based cybersecurity and IT professional building
+                practical skills in information security, Linux, computer
+                networking and technical investigation. My portfolio documents
+                cybersecurity labs, security research, technical projects,
+                learning reports and certifications as I develop my career
+                toward security operations, blue team analysis and defensive
+                security.
               </p>
 
               <div className="hero-actions">
@@ -1033,7 +1036,7 @@ function App() {
             number="07"
             eyebrow="TECHNICAL TOOLKIT"
             title="Tools I use to investigate, build and understand systems."
-            text="The list combines cybersecurity tooling with the systems and programming technologies that support my security work."
+            text="Explore my cybersecurity and IT toolkit, including security tools, Linux systems, computer networking, programming, troubleshooting and technologies used in hands-on security labs and technical projects."
           />
 
           <div className="tool-layout">
@@ -1092,7 +1095,7 @@ function App() {
             number="08"
             eyebrow="CONTINUOUS DEVELOPMENT"
             title="Learning is part of the security workflow."
-            text="My cybersecurity knowledge is built through structured training and repeated hands-on practice."
+            text="I develop my cybersecurity skills through structured training, practical labs, security exercises and technical projects covering information security, defensive security concepts and IT systems."
           />
 
           <div className="learning-list">
@@ -1175,7 +1178,7 @@ function App() {
             number="10"
             eyebrow="WHAT I CAN HELP WITH"
             title="Technical services with a security mindset."
-            text="My services are focused on practical technical assistance, security awareness and building technology that takes security seriously."
+            text="I offer practical technical assistance, Linux troubleshooting, security documentation and security-aware development. This portfolio also documents my learning and projects as I work toward junior cybersecurity, SOC analyst internship and IT support opportunities."
           />
 
           <div className="services-grid">
