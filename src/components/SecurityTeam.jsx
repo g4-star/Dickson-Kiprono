@@ -58,42 +58,14 @@ export default function SecurityTeam({ onBack }) {
   }, []);
 
   const slideshowImages = useMemo(() => {
-    const images = [];
-
-    members.forEach((member) => {
-      if (member.profile_image_url) {
-        images.push({
-          url: member.profile_image_url,
-          name: member.name,
-          type: "profile",
-        });
-      }
-
-      if (Array.isArray(member.images)) {
-        member.images.forEach((image) => {
-          if (image?.image_url) {
-            images.push({
-              url: image.image_url,
-              name: member.name,
-              type: "team",
-            });
-          }
-        });
-      }
-    });
-
-    galleryImages.forEach((image) => {
-      if (image?.image_url) {
-        images.push({
-          url: image.image_url,
-          name: "Security Team",
-          type: "gallery",
-        });
-      }
-    });
-
-    return images;
-  }, [members, galleryImages]);
+    return galleryImages
+      .filter((image) => image?.image_url)
+      .map((image) => ({
+        url: image.image_url,
+        name: "Security Team",
+        type: "gallery",
+      }));
+  }, [galleryImages]);
 
   useEffect(() => {
     setSlide(0);
