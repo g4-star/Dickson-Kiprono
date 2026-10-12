@@ -1306,3 +1306,9 @@
     left: 22px;
   }
 }
+
+/* Keep complete images visible in the public Security Team slideshow */
+.security-team-showcase .security-team-slide img {
+  object-fit: contain;
+  object-position: center;
+}
