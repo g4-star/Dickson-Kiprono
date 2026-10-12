@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dickson-kiprono.vercel.app/sitemap.xml
