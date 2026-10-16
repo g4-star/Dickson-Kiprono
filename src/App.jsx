@@ -1351,7 +1351,7 @@ function App() {
               }
             }}
           >
-            ADMIN ACCESS
+            CONTROL PANEL
           </a>
         </div>
       </footer>

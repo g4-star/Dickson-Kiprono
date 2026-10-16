@@ -565,7 +565,7 @@ export default function PrivateMainAdmin({ onBack }) {
     }
   }
 
-  if (!authenticated && !loading) {
+  if (!authenticated) {
     return (
       <main className="private-admin-page">
         <section className="private-login">
