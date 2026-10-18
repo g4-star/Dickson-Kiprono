@@ -23,6 +23,7 @@ import {
   Zap,
 } from "lucide-react";
 import { portfolio } from "./data/portfolio";
+import InteractiveTerminal from "./components/InteractiveTerminal";
 import SecurityTeam from "./components/SecurityTeam";
 import PrivateMainAdmin from "./components/PrivateMainAdmin";
 import CertificationsEducation from "./components/CertificationsEducation";
@@ -542,57 +543,7 @@ function App() {
               </div>
             </div>
 
-            <div className="terminal-card">
-              <div className="terminal-top">
-                <div className="terminal-dots">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <small>trippie@parrot:~</small>
-                <span className="terminal-lock">
-                  <LockKeyhole size={13} />
-                </span>
-              </div>
-
-              <div className="terminal-body">
-                <p>
-                  <span className="terminal-green">trippie@parrot</span>
-                  <span>:</span>
-                  <span className="terminal-blue">~</span>
-                  <span>$ whoami</span>
-                </p>
-                <strong>cybersecurity-professional</strong>
-
-                <p>
-                  <span className="terminal-green">trippie@parrot</span>
-                  <span>:</span>
-                  <span className="terminal-blue">~</span>
-                  <span>$ cat focus.txt</span>
-                </p>
-
-                <div className="terminal-list">
-                  <span>→ cybersecurity</span>
-                  <span>→ network security</span>
-                  <span>→ Linux & systems</span>
-                  <span>→ security labs</span>
-                  <span>→ automation</span>
-                  <span>→ continuous learning</span>
-                </div>
-
-                <p>
-                  <span className="terminal-green">trippie@parrot</span>
-                  <span>:</span>
-                  <span className="terminal-blue">~</span>
-                  <span>$ status</span>
-                </p>
-
-                <div className="terminal-status">
-                  <span className="pulse" />
-                  <span>learning · building · investigating</span>
-                </div>
-              </div>
-            </div>
+            <InteractiveTerminal />
           </div>
 
           <div className="hero-bottom">
