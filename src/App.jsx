@@ -784,7 +784,115 @@ function App() {
           </div>
         </section>
 
-        {/* LAB REPORTS */}
+
+{/* CYBERSECURITY TEAMS AND SPECIALIZATIONS */}
+<section id="security-disciplines" className="section seo-disciplines-section">
+  <SectionHeader
+    number="03A"
+    eyebrow="CYBERSECURITY TEAMS & SPECIALIZATIONS"
+    title="Explore the teams and disciplines that protect digital systems."
+    text="Cybersecurity is a broad field. This section introduces the specialist teams, security functions and technical disciplines I study, explore and develop through learning, practical labs and projects."
+  />
+
+  <div className="seo-disciplines-grid">
+    <article>
+      <span>OFFENSIVE SECURITY</span>
+      <h3>Red Team</h3>
+      <p>Adversary simulation concepts, authorized security testing, attack-surface discovery and ethical hacking practice.</p>
+      <div>Ethical Hacking · Penetration Testing · Reconnaissance · Security Testing</div>
+    </article>
+    <article>
+      <span>DEFENSIVE SECURITY</span>
+      <h3>Blue Team</h3>
+      <p>Defensive security concepts focused on protecting systems, monitoring activity, identifying threats and improving resilience.</p>
+      <div>Network Defense · System Hardening · Log Analysis · Endpoint Security</div>
+    </article>
+    <article>
+      <span>COLLABORATIVE SECURITY</span>
+      <h3>Purple Team</h3>
+      <p>Connecting offensive and defensive security knowledge to improve detection, validation and security controls.</p>
+      <div>Detection Engineering · Control Validation · Security Collaboration</div>
+    </article>
+    <article>
+      <span>SECURITY OPERATIONS</span>
+      <h3>SOC Team</h3>
+      <p>Security Operations Center concepts, event monitoring, alert triage, investigation and escalation workflows.</p>
+      <div>SOC Analyst · SIEM Concepts · Monitoring · Alert Triage</div>
+    </article>
+    <article>
+      <span>INCIDENT HANDLING</span>
+      <h3>Incident Response Team</h3>
+      <p>Learning how teams prepare for, investigate, contain and recover from cybersecurity incidents.</p>
+      <div>Incident Handling · Threat Analysis · Recovery · Reporting</div>
+    </article>
+    <article>
+      <span>THREAT RESEARCH</span>
+      <h3>Threat Intelligence Team</h3>
+      <p>Understanding threat actors, indicators of compromise, attack patterns and security research.</p>
+      <div>Threat Intelligence · OSINT Concepts · IOC Analysis · Threat Research</div>
+    </article>
+    <article>
+      <span>RISK REDUCTION</span>
+      <h3>Vulnerability Management Team</h3>
+      <p>Finding, documenting, prioritizing and tracking weaknesses so organizations can make informed remediation decisions.</p>
+      <div>Vulnerability Assessment · Risk Prioritization · Remediation · Reporting</div>
+    </article>
+    <article>
+      <span>SECURE SOFTWARE</span>
+      <h3>Application Security Team</h3>
+      <p>Exploring secure application design, web security, software weaknesses and security testing throughout development.</p>
+      <div>Web Security · OWASP Concepts · Secure Coding · API Security</div>
+    </article>
+    <article>
+      <span>INFRASTRUCTURE</span>
+      <h3>Network Security Team</h3>
+      <p>Network architecture, traffic analysis, access control, segmentation and infrastructure defense.</p>
+      <div>Network Monitoring · Firewalls · TCP/IP · Network Hardening</div>
+    </article>
+    <article>
+      <span>CLOUD AND SYSTEMS</span>
+      <h3>Cloud & Infrastructure Security</h3>
+      <p>Security concepts for cloud platforms, Linux systems, identity, configuration and infrastructure services.</p>
+      <div>Cloud Security · Linux Security · IAM Concepts · Configuration Review</div>
+    </article>
+    <article>
+      <span>INVESTIGATION</span>
+      <h3>Digital Forensics Team</h3>
+      <p>Digital investigation concepts, evidence handling, system artifacts and careful technical documentation.</p>
+      <div>Digital Forensics · Evidence Preservation · Investigation · Analysis</div>
+    </article>
+    <article>
+      <span>SECURITY ENGINEERING</span>
+      <h3>Security Engineering Team</h3>
+      <p>Building and improving security controls, automation, monitoring workflows and secure technical systems.</p>
+      <div>Security Automation · Python · Bash · Security Architecture</div>
+    </article>
+  </div>
+
+  <div className="seo-career-keywords">
+    <h3>Related cybersecurity and IT career paths</h3>
+    <p>
+      Cybersecurity professional · Junior Cybersecurity Analyst · SOC Analyst ·
+      Information Security Analyst · Security Operations Associate ·
+      Vulnerability Analyst · Penetration Testing Trainee · Security Researcher ·
+      Network Security Technician · IT Support Technician · Linux Administrator ·
+      Security Engineer · Application Security Learner · Digital Forensics Learner ·
+      Threat Intelligence Analyst · Security Consultant.
+    </p>
+    <h3>Software and technology development</h3>
+    <p>
+      Software Developer · Web Developer · Frontend Developer · Backend Developer ·
+      Full-Stack Developer · Python Developer · React Developer · Flutter Developer ·
+      API Developer · Automation Developer · Database Developer · Technical Support.
+    </p>
+    <p className="seo-location-note">
+      Based in Kenya, Dickson Kiprono's portfolio brings together cybersecurity learning,
+      IT skills, software development, technical projects and practical security exploration.
+    </p>
+  </div>
+</section>
+
+{/* LAB REPORTS */}
         <section id="labs" className="section labs-section">
           <SectionHeader
             number="04"

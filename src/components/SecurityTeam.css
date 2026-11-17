@@ -1312,3 +1312,42 @@
   object-fit: contain;
   object-position: center;
 }
+
+
+/* Cybersecurity team specialization directory */
+.security-team-specializations {
+  padding: clamp(56px, 8vw, 110px) clamp(20px, 6vw, 90px);
+  background: #080d16;
+  color: #f4f7fb;
+}
+.security-team-specializations-heading {
+  max-width: 760px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+.security-team-specializations-heading > span {
+  color: #69d7ff;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+.security-team-specializations-heading h2 {
+  margin: 14px 0;
+}
+.security-team-specializations-heading p {
+  line-height: 1.8;
+  color: rgba(244,247,251,.72);
+}
+.security-team-specializations-grid article {
+  border-color: rgba(105,215,255,.17);
+  background: rgba(255,255,255,.035);
+}
+.security-team-specializations-grid article > span {
+  color: #69d7ff;
+  font-size: .7rem;
+  letter-spacing: .1em;
+}
+.security-team-specializations-grid article p {
+  color: rgba(244,247,251,.74);
+  line-height: 1.75;
+}

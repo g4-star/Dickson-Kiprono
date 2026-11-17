@@ -463,7 +463,35 @@ export default function SecurityTeam({ onBack }) {
         </div>
       </section>
 
-      <section className="security-team-showcase">
+
+<section id="security-team-specializations" className="security-team-specializations">
+  <div className="security-team-specializations-heading">
+    <span>CYBERSECURITY DISCIPLINES / TEAM STRUCTURES</span>
+    <h2>Different teams. One security mission.</h2>
+    <p>
+      Modern cybersecurity brings together specialist functions. These team
+      structures describe areas of security practice, collaboration and learning;
+      they are not a claim that every function is a separately staffed team here.
+    </p>
+  </div>
+
+  <div className="security-team-specializations-grid">
+    <article><span>01 / OFFENSIVE</span><h3>Red Team</h3><p>Authorized adversary simulation, ethical hacking, attack-surface analysis and penetration-testing concepts.</p></article>
+    <article><span>02 / DEFENSIVE</span><h3>Blue Team</h3><p>Threat detection, system hardening, network defense, monitoring and protective security controls.</p></article>
+    <article><span>03 / COLLABORATION</span><h3>Purple Team</h3><p>Combining offensive testing and defensive detection to strengthen security outcomes.</p></article>
+    <article><span>04 / OPERATIONS</span><h3>SOC Team</h3><p>Security monitoring, alert triage, log analysis, investigation and escalation.</p></article>
+    <article><span>05 / RESPONSE</span><h3>Incident Response</h3><p>Incident preparation, identification, containment, recovery and lessons learned.</p></article>
+    <article><span>06 / INTELLIGENCE</span><h3>Threat Intelligence</h3><p>Threat research, indicators of compromise, attack patterns and intelligence analysis.</p></article>
+    <article><span>07 / ASSESSMENT</span><h3>Vulnerability Management</h3><p>Security assessments, weakness prioritization, remediation tracking and reporting.</p></article>
+    <article><span>08 / APPLICATIONS</span><h3>Application Security</h3><p>Secure development, web application security, API testing and software risk reduction.</p></article>
+    <article><span>09 / INFRASTRUCTURE</span><h3>Network Defense</h3><p>Network visibility, segmentation, traffic analysis, access control and infrastructure protection.</p></article>
+    <article><span>10 / INVESTIGATION</span><h3>Digital Forensics</h3><p>Evidence-aware investigation, digital artifacts, analysis and technical reporting.</p></article>
+    <article><span>11 / ENGINEERING</span><h3>Security Engineering</h3><p>Security architecture, automation, defensive tooling and implementation of security controls.</p></article>
+    <article><span>12 / GOVERNANCE</span><h3>GRC & Security Awareness</h3><p>Governance, risk, compliance concepts, policies, user awareness and security procedures.</p></article>
+  </div>
+</section>
+
+<section className="security-team-showcase">
         <div className="security-team-showcase-heading">
           <span>SECURITY NETWORK / TEAM ARCHIVE</span>
           <h2>Inside the Security Team.</h2>

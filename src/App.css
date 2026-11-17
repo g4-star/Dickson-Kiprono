@@ -3185,3 +3185,82 @@ a {
     min-height: 0;
   }
 }
+
+
+/* Search-friendly cybersecurity disciplines directory */
+.seo-disciplines-section {
+  position: relative;
+}
+.seo-disciplines-grid,
+.security-team-specializations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 34px;
+}
+.seo-disciplines-grid article,
+.security-team-specializations-grid article {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 16px;
+  background: var(--card-bg, rgba(255,255,255,.025));
+}
+.seo-disciplines-grid article > span,
+.security-team-specializations-grid article > span {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--accent, #65d9ff);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+.seo-disciplines-grid h3,
+.security-team-specializations-grid h3 {
+  margin: 0 0 12px;
+}
+.seo-disciplines-grid p,
+.security-team-specializations-grid p {
+  line-height: 1.7;
+}
+.seo-disciplines-grid article > div {
+  margin-top: 16px;
+  font-size: .78rem;
+  line-height: 1.7;
+  opacity: .8;
+}
+.seo-career-keywords {
+  margin-top: 34px;
+  padding: 26px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 16px;
+}
+.seo-career-keywords h3 {
+  margin: 18px 0 8px;
+}
+.seo-career-keywords h3:first-child {
+  margin-top: 0;
+}
+.seo-career-keywords p {
+  line-height: 1.8;
+}
+.seo-career-keywords .seo-location-note {
+  margin-top: 20px;
+  opacity: .8;
+}
+@media (max-width: 900px) {
+  .seo-disciplines-grid,
+  .security-team-specializations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .seo-disciplines-grid,
+  .security-team-specializations-grid {
+    grid-template-columns: 1fr;
+  }
+  .seo-disciplines-grid article,
+  .security-team-specializations-grid article {
+    padding: 20px;
+  }
+}
