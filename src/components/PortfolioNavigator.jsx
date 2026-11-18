@@ -42,13 +42,13 @@ const topics = [
     keywords: ["cyber", "cybersecurity", "security", "soc", "pentest", "pentesting", "penetration", "network", "defense", "defensive"],
   },
   {
-    id: "projects",
-    title: "Projects & Development",
-    short: "Projects",
-    question: "Would you like to see Dickson's projects and software development work?",
+    id: "lab-projects",
+    title: "Cybersecurity Lab Projects",
+    short: "Lab projects",
+    question: "Would you like to explore Dickson's cybersecurity lab projects?",
     answer:
-      "This is Dickson's Projects section. Explore the projects featured in his portfolio and follow available live-demo or source-code links.",
-    keywords: ["project", "projects", "github", "code", "coding", "software", "development", "app", "jumaa", "repository"],
+      "Explore cybersecurity lab work, practical security exercises, technical investigations, and documented findings.",
+    keywords: ["lab project", "lab projects", "security project", "security projects", "investigation", "writeup", "write-up", "ctf"],
   },
   {
     id: "labs",
@@ -78,12 +78,12 @@ const topics = [
     keywords: ["learning", "journey", "study", "studies", "moringa", "cisco", "tryhackme", "hack the box"],
   },
   {
-    id: "services",
-    title: "Services & Opportunities",
-    short: "Hire or collaborate",
-    question: "Would you like to explore Dickson's services and potential collaboration opportunities?",
+    id: "opportunities",
+    title: "Cybersecurity Opportunities",
+    short: "Opportunities",
+    question: "Would you like to discuss cybersecurity opportunities, internships or collaboration?",
     answer:
-      "This is Dickson's Services section. Explore the services listed in his portfolio and get in touch to discuss a project, internship, or professional opportunity.",
+      "Dickson is open to cybersecurity opportunities, internships and relevant technical collaborations. Visit the contact section to get in touch.",
     keywords: ["hire", "hiring", "job", "jobs", "work", "service", "services", "freelance", "freelancing", "internship", "internships", "collaborate", "collaboration", "opportunity", "opportunities"],
   },
   {
@@ -365,11 +365,11 @@ export default function PortfolioNavigator({ onNavigate }) {
     if (salaryIntent) {
       setSelected(null);
       setReply(
-        "Thanks for asking! 😊 As a starting point, expected monthly salary is around KSh 35,000–70,000, depending on the role, responsibilities, and skills required. Dickson is open to negotiation and happy to discuss a package that fits the opportunity. Feel free to explore my services and contact me so we can talk about the details."
+        "Thanks for asking! As a starting point, expected monthly salary is around KSh 35,000–70,000, depending on the role, responsibilities, and skills required. Dickson is open to negotiation and happy to discuss a package that fits the opportunity. Feel free to get in touch to discuss the opportunity."
       );
       setSuggestions(
         topics.filter((topic) =>
-          ["services", "projects", "skills", "contact"].includes(topic.id)
+          ["opportunities", "lab-projects", "skills"].includes(topic.id)
         )
       );
       setInput("");
@@ -380,11 +380,11 @@ export default function PortfolioNavigator({ onNavigate }) {
     if (hiringIntent) {
       setSelected(null);
       setReply(
-        "Absolutely, yes! 😊 Dickson is open to exciting opportunities and collaborations. Feel free to explore his projects and see the amazing work he has been building! You can also check out his services to discover how he could help with your project or team. If you see a good fit, feel free to contact him and start a conversation!"
+        "Absolutely, yes! Dickson is open to cybersecurity opportunities, internships and relevant technical collaborations. Explore his cybersecurity labs, reports and skills, or get in touch to discuss a suitable opportunity."
       );
       setSuggestions(
         topics.filter((topic) =>
-          ["services", "projects", "skills", "contact"].includes(topic.id)
+          ["opportunities", "lab-projects", "skills"].includes(topic.id)
         )
       );
       setInput("");
@@ -411,7 +411,7 @@ export default function PortfolioNavigator({ onNavigate }) {
 
     setSelected(null);
     setReply(
-      "Hey there! 😊 Dickson's portfolio guide is here to help you explore his work. You can ask me about hiring, salary expectations, projects, cybersecurity, technical skills, education, services, or how to contact him. What would you like to know?"
+      "Hello! Dickson's portfolio guide is here to help you explore his work. You can ask me about hiring, salary expectations, cybersecurity labs, security reports, technical skills, education, opportunities, or how to contact him. What would you like to know?"
     );
     setSuggestions(shuffled(topics).slice(0, 4));
     setInput("");
@@ -433,11 +433,11 @@ export default function PortfolioNavigator({ onNavigate }) {
   function handleContactNo() {
     setContactStep(null);
     setReply(
-      "No problem! 😊 Dickson's contact options will be available whenever needed."
+      "No problem! Dickson's contact options will be available whenever needed."
     );
     setSuggestions(
       topics.filter((topic) =>
-        ["services", "projects", "contact"].includes(topic.id)
+        ["opportunities", "lab-projects"].includes(topic.id)
       )
     );
   }
@@ -526,7 +526,7 @@ export default function PortfolioNavigator({ onNavigate }) {
                     Cybersecurity
                   </button>
                   <button type="button" onClick={() => startQuiz("it")}>
-                    IT &amp; development
+                    IT Fundamentals
                   </button>
                   <button type="button" onClick={() => startQuiz("mixed")}>
                     Random mixed quiz
@@ -642,7 +642,7 @@ export default function PortfolioNavigator({ onNavigate }) {
                 {contactStep === "choose" ? (
                   <>
                     <span className="pn-topic-label">CONTACT DICKSON</span>
-                    <h4>How would you like to contact Dickson? 😊</h4>
+                    <h4>How would you like to contact Dickson?</h4>
                     <p>Choose whichever option works best for you.</p>
                     <div className="pn-suggestions">
                       {contactMethods.map((method) => (

@@ -303,6 +303,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [labReports, setLabReports] = useState([]);
   const [labProjects, setLabProjects] = useState([]);
+  const [skills, setSkills] = useState([]);
   const [privateAdminPage, setPrivateAdminPage] = useState(
     window.location.pathname === "/private-admin"
   );
@@ -333,6 +334,10 @@ function App() {
           setLabProjects(
             Array.isArray(data.projects) ? data.projects : []
           );
+
+          setSkills(
+            Array.isArray(data.skills) ? data.skills : []
+          );
         }
       } catch (error) {
         console.error("Public lab reports error:", error);
@@ -340,6 +345,7 @@ function App() {
         if (!cancelled) {
           setLabReports([]);
           setLabProjects([]);
+          setSkills([]);
         }
       }
     }
@@ -353,6 +359,7 @@ function App() {
 
   const goTo = (id) => {
     setMenuOpen(false);
+    if (id === "opportunities") id = "contact";
 
     if (id === "security-team" || id === "certifications") {
       setCurrentPage(id);
@@ -437,10 +444,8 @@ function App() {
               ["about", "About"],
               ["cybersecurity", "Cybersecurity"],
               ["labs", "Lab Reports"],
-              ["projects", "Projects"],
               ["skills", "Tools & Skills"],
               ["learning", "Learning"],
-              ["services", "Services"],
               ["certifications", "Certifications & Education"],
               ["security-team", "Security Team"],
               ["contact", "Contact"],
@@ -661,14 +666,6 @@ function App() {
                 for my cybersecurity work.
               </p>
 
-              <p>
-                Software development is therefore a supporting technical
-                capability rather than the centre of my professional identity.
-                My primary direction is <strong>cybersecurity</strong>, with
-                development skills helping me understand applications, automate
-                repetitive tasks, analyze systems and build useful tools around
-                security problems.
-              </p>
 
               <p className="about-highlight">
                 <strong>
@@ -879,15 +876,18 @@ function App() {
       Security Engineer · Application Security Learner · Digital Forensics Learner ·
       Threat Intelligence Analyst · Security Consultant.
     </p>
-    <h3>Software and technology development</h3>
+    <h3>Cybersecurity disciplines and technical interests</h3>
     <p>
-      Software Developer · Web Developer · Frontend Developer · Backend Developer ·
-      Full-Stack Developer · Python Developer · React Developer · Flutter Developer ·
-      API Developer · Automation Developer · Database Developer · Technical Support.
+      Network Security · Linux Security · Security Operations · SOC Analysis ·
+      Vulnerability Assessment · Web Application Security · Defensive Security ·
+      Security Monitoring · Digital Forensics · Incident Response ·
+      Threat Analysis · Security Automation · Information Security ·
+      Security Awareness · Technical Documentation.
     </p>
     <p className="seo-location-note">
-      Based in Kenya, Dickson Kiprono's portfolio brings together cybersecurity learning,
-      IT skills, software development, technical projects and practical security exploration.
+      Based in Kenya, Dickson Kiprono's portfolio documents cybersecurity learning,
+      IT systems knowledge, security labs, technical investigations and practical
+      defensive security exploration.
     </p>
   </div>
 </section>
@@ -1074,127 +1074,77 @@ function App() {
                 <span>SECURITY AUTOMATION</span>
                 <span>NETWORK SECURITY</span>
                 <span>DIGITAL FORENSICS</span>
-                <span>OTHER PROJECTS</span>
+                <span>SECURITY RESEARCH</span>
               </div>
             </div>
           )}
         </section>
 
-        {/* PROJECTS */}
-        <section id="projects" className="section projects-section">
-          <SectionHeader
-            number="06"
-            eyebrow="PRACTICAL WORK"
-            title="Projects that demonstrate technical problem-solving."
-            text="Software projects appear here as evidence of practical engineering capability supporting my wider cybersecurity and technology work."
-          />
-
-          <div className="project-stack">
-            {portfolio.projects.map((project, index) => (
-              <article className="project-row" key={project.id}>
-                <div className="project-number">{project.number}</div>
-
-                <div className="project-main">
-                  <div className="project-heading">
-                    <span>{project.type}</span>
-                    <h3>{project.name}</h3>
-                  </div>
-
-                  <p className="project-description">{project.description}</p>
-                  <p className="project-details">{project.details}</p>
-
-                  <div className="project-features">
-                    {project.features?.map((feature) => (
-                      <span key={feature}>{feature}</span>
-                    ))}
-                  </div>
-
-                  <div className="project-tech">
-                    {project.technologies.map((technology) => (
-                      <span key={technology}>{technology}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="project-side">
-                  <span>PROJECT {String(index + 1).padStart(2, "0")}</span>
-
-                  {project.live && (
-                    <a href={project.live} target="_blank" rel="noreferrer">
-                      Live
-                      <ArrowUpRight size={15} />
-                    </a>
-                  )}
-
-                  {project.github && (
-                    <a href={project.github} target="_blank" rel="noreferrer">
-                      Source
-                      <ArrowUpRight size={15} />
-                    </a>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* TOOLS */}
+        {/* CYBERSECURITY SKILLS */}
         <section id="skills" className="section tools-section">
           <SectionHeader
             number="07"
-            eyebrow="TECHNICAL TOOLKIT"
-            title="Tools I use to investigate, build and understand systems."
-            text="Explore my cybersecurity and IT toolkit, including security tools, Linux systems, computer networking, programming, troubleshooting and technologies used in hands-on security labs and technical projects."
+            eyebrow="CYBERSECURITY TOOLKIT"
+            title="Security skills, tools and practical knowledge."
+            text="Explore my cybersecurity toolkit, practical security exercises, systems knowledge and areas of ongoing learning."
           />
 
-          <div className="tool-layout">
-            <div className="tool-cloud">
-              {securityTools.map((tool, index) => (
-                <div className="tool-chip" key={tool}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {tool}
-                </div>
+          {skills.length > 0 ? (
+            <div className="skill-grid">
+              {skills.map((skill, index) => (
+                <article className="skill-card" key={skill.id}>
+                  <div className="skill-card-top">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {skill.technologies && (
+                      <span className="skill-level">
+                        {skill.technologies}
+                      </span>
+                    )}
+                  </div>
+
+                  {skill.file_url && (
+                    <img
+                      className="skill-image"
+                      src={skill.file_url}
+                      alt={`${skill.title} screenshot`}
+                      loading="lazy"
+                    />
+                  )}
+
+                  <div className="skill-card-content">
+                    {skill.category && (
+                      <span className="skill-category">{skill.category}</span>
+                    )}
+                    <h3>{skill.title}</h3>
+                    {skill.description && <p>{skill.description}</p>}
+
+                    {skill.objective && (
+                      <div className="skill-example">
+                        <strong>Practical example</strong>
+                        <p>{skill.objective}</p>
+                      </div>
+                    )}
+
+                    {skill.features && (
+                      <div className="skill-capabilities">
+                        <strong>Topics and capabilities</strong>
+                        <p>{skill.features}</p>
+                      </div>
+                    )}
+                  </div>
+                </article>
               ))}
             </div>
-
-            <div className="technology-groups">
-              <div>
-                <Network size={18} />
-                <h3>Security & Networking</h3>
-                <p>
-                  Security concepts, network communication, segmentation,
-                  reconnaissance, monitoring and defensive thinking.
-                </p>
-              </div>
-
-              <div>
-                <Terminal size={18} />
-                <h3>Systems</h3>
-                <p>
-                  Linux, command-line workflows, Bash, system environments,
-                  Docker and technical troubleshooting.
-                </p>
-              </div>
-
-              <div>
-                <Code2 size={18} />
-                <h3>Programming</h3>
-                <p>
-                  Python and other development technologies used when
-                  automation or software engineering supports a security task.
-                </p>
-              </div>
-
-              <div>
-                <Database size={18} />
-                <h3>Data & Backend</h3>
-                <p>
-                  PostgreSQL, APIs, backend services and database architecture
-                  used to understand and build connected systems.
-                </p>
-              </div>
+          ) : (
+            <div className="skills-empty">
+              <Network size={25} />
+              <h3>Cybersecurity skills are being organized.</h3>
+              <p>
+                Skills and practical examples will appear here as they are
+                added and published through the administration panel.
+              </p>
             </div>
-          </div>
+          )}
         </section>
 
         {/* LEARNING */}
@@ -1244,91 +1194,6 @@ function App() {
 
           <SecurityMethod />
 
-        </section>
-
-        {/* DEVELOPMENT */}
-        <section className="section development-section">
-          <div className="supporting-label">SUPPORTING TECHNICAL CAPABILITY</div>
-
-          <div className="development-grid">
-            <div>
-              <h2>
-                I can also build
-                <br />
-                the technology I secure.
-              </h2>
-            </div>
-
-            <div>
-              <p>
-                Software development is not the main label I use for myself,
-                but it is an important technical advantage. Understanding how
-                applications are designed helps me reason about application
-                security, APIs, databases, authentication, data flows and
-                automation.
-              </p>
-
-              <div className="dev-stack">
-                <span><Smartphone size={15} /> Flutter / Dart</span>
-                <span><Code2 size={15} /> React / JavaScript</span>
-                <span><Terminal size={15} /> Python / Bash</span>
-                <span><Database size={15} /> PostgreSQL</span>
-                <span><Server size={15} /> FastAPI</span>
-                <span><Globe size={15} /> APIs / Web</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SERVICES */}
-        <section id="services" className="section services-section">
-          <SectionHeader
-            number="10"
-            eyebrow="WHAT I CAN HELP WITH"
-            title="Technical services with a security mindset."
-            text="I offer practical technical assistance, Linux troubleshooting, security documentation and security-aware development. This portfolio also documents my learning and projects as I work toward junior cybersecurity, SOC analyst internship and IT support opportunities."
-          />
-
-          <div className="services-grid">
-            <article>
-              <span>01</span>
-              <h3>Cybersecurity Support</h3>
-              <p>
-                Practical assistance with security concepts, system
-                hardening, Linux environments, basic security assessment and
-                technical security documentation.
-              </p>
-            </article>
-
-            <article>
-              <span>02</span>
-              <h3>Security Documentation</h3>
-              <p>
-                Clear technical documentation for labs, security exercises,
-                system investigations, procedures and project security
-                considerations.
-              </p>
-            </article>
-
-            <article>
-              <span>03</span>
-              <h3>Linux & Technical Support</h3>
-              <p>
-                Linux setup, troubleshooting, command-line workflows,
-                development environments and technical configuration.
-              </p>
-            </article>
-
-            <article>
-              <span>04</span>
-              <h3>Security-Focused Development</h3>
-              <p>
-                Building small applications, dashboards and automation tools
-                where software development supports a practical technical or
-                security requirement.
-              </p>
-            </article>
-          </div>
         </section>
 
         {/* CURRENT FOCUS */}

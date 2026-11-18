@@ -49,6 +49,8 @@ const ALLOWED_CONTENT_TYPES = new Set([
   "project_document",
   "project_code",
   "profile_image",
+  "software_project",
+  "skill",
 ]);
 
 const ALLOWED_EXTENSIONS = new Set([
@@ -159,6 +161,26 @@ async function ensureTable(sql) {
   await sql`
     ALTER TABLE portfolio_content
     ADD COLUMN IF NOT EXISTS issuer TEXT DEFAULT '';
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS technologies TEXT DEFAULT '';
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS features TEXT DEFAULT '';
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS live_url TEXT DEFAULT '';
+  `;
+
+  await sql`
+    ALTER TABLE portfolio_content
+    ADD COLUMN IF NOT EXISTS github_url TEXT DEFAULT '';
   `;
 
   await sql`
@@ -321,7 +343,11 @@ async function createContent(req, res, sql) {
   const fileUrl = cleanText(body?.file_url, 2000);
   const fileName = safeFileName(body?.file_name);
   const fileType = cleanText(body?.file_type, 150);
-  const fileSize = Number(body?.file_size);
+  const fileSize = Number(body?.file_size ?? 0);
+  const technologies = cleanText(body?.technologies, 4000);
+  const features = cleanText(body?.features, 8000);
+  const liveUrl = cleanText(body?.live_url, 2000);
+  const githubUrl = cleanText(body?.github_url, 2000);
   const published = body?.published === true;
 
   if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
@@ -338,34 +364,59 @@ async function createContent(req, res, sql) {
     });
   }
 
-  if (!isValidBlobUrl(fileUrl)) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid Vercel Blob URL.",
-    });
+  const hasFile = Boolean(fileUrl || fileName || fileType || fileSize);
+  const optionalProjectFile =
+    contentType === "software_project" || contentType === "skill";
+
+  if (!optionalProjectFile || hasFile) {
+    if (!isValidBlobUrl(fileUrl)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid Vercel Blob URL.",
+      });
+    }
+
+    const fileExtension = getFileExtension(fileName);
+
+    if (
+      !ALLOWED_TYPES.has(fileType) &&
+      !ALLOWED_EXTENSIONS.has(fileExtension)
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Unsupported file type.",
+      });
+    }
+
+    if (
+      !Number.isSafeInteger(fileSize) ||
+      fileSize <= 0 ||
+      fileSize > MAX_BLOB_SIZE
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid file size.",
+      });
+    }
+  } else {
+    // Text-only skill or software project.
+    // Keep all file metadata empty when no file is attached.
+    body.file_url = "";
+    body.file_name = "";
+    body.file_type = "";
+    body.file_size = 0;
   }
 
-  const fileExtension = getFileExtension(fileName);
-
-  if (
-    !ALLOWED_TYPES.has(fileType) &&
-    !ALLOWED_EXTENSIONS.has(fileExtension)
-  ) {
-    return res.status(400).json({
-      success: false,
-      error: "Unsupported file type.",
-    });
-  }
-
-  if (
-    !Number.isSafeInteger(fileSize) ||
-    fileSize <= 0 ||
-    fileSize > MAX_BLOB_SIZE
-  ) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid file size.",
-    });
+  for (const [label, value] of [
+    ["Live URL", liveUrl],
+    ["GitHub URL", githubUrl],
+  ]) {
+    if (value && !/^https:\/\//i.test(value)) {
+      return res.status(400).json({
+        success: false,
+        error: `${label} must use HTTPS.`,
+      });
+    }
   }
 
   if (contentType === "profile_image") {
@@ -390,6 +441,10 @@ async function createContent(req, res, sql) {
       file_name,
       file_type,
       file_size,
+      technologies,
+      features,
+      live_url,
+      github_url,
       published
     )
     VALUES (
@@ -403,6 +458,10 @@ async function createContent(req, res, sql) {
       ${fileName},
       ${fileType},
       ${fileSize},
+      ${technologies},
+      ${features},
+      ${liveUrl},
+      ${githubUrl},
       ${published}
     )
     RETURNING *;
@@ -466,7 +525,11 @@ async function updateContent(req, res, sql) {
       "file_url" in (body || {}) ||
       "file_name" in (body || {}) ||
       "file_type" in (body || {}) ||
-      "file_size" in (body || {})
+      "file_size" in (body || {}) ||
+      "technologies" in (body || {}) ||
+      "features" in (body || {}) ||
+      "live_url" in (body || {}) ||
+      "github_url" in (body || {})
     ) &&
     !("published" in (body || {}))
   ) {
@@ -502,7 +565,11 @@ async function updateContent(req, res, sql) {
     "file_url" in (body || {}) ||
     "file_name" in (body || {}) ||
     "file_type" in (body || {}) ||
-    "file_size" in (body || {});
+    "file_size" in (body || {}) ||
+    "technologies" in (body || {}) ||
+    "features" in (body || {}) ||
+    "live_url" in (body || {}) ||
+    "github_url" in (body || {});
 
   if (!isFullEdit) {
     if (typeof body?.published !== "boolean") {
@@ -583,7 +650,24 @@ async function updateContent(req, res, sql) {
   );
 
   const fileSize = Number(
-    body?.file_size ?? current.file_size
+    body?.file_size ?? current.file_size ?? 0
+  );
+
+  const technologies = cleanText(
+    body?.technologies ?? current.technologies,
+    4000
+  );
+  const features = cleanText(
+    body?.features ?? current.features,
+    8000
+  );
+  const liveUrl = cleanText(
+    body?.live_url ?? current.live_url,
+    2000
+  );
+  const githubUrl = cleanText(
+    body?.github_url ?? current.github_url,
+    2000
   );
 
   const published =
@@ -605,34 +689,59 @@ async function updateContent(req, res, sql) {
     });
   }
 
-  if (!isValidBlobUrl(fileUrl)) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid Vercel Blob URL.",
-    });
+  const hasFile = Boolean(fileUrl || fileName || fileType || fileSize);
+  const optionalProjectFile =
+    contentType === "software_project" || contentType === "skill";
+
+  if (!optionalProjectFile || hasFile) {
+    if (!isValidBlobUrl(fileUrl)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid Vercel Blob URL.",
+      });
+    }
+
+    const fileExtension = getFileExtension(fileName);
+
+    if (
+      !ALLOWED_TYPES.has(fileType) &&
+      !ALLOWED_EXTENSIONS.has(fileExtension)
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Unsupported file type.",
+      });
+    }
+
+    if (
+      !Number.isSafeInteger(fileSize) ||
+      fileSize <= 0 ||
+      fileSize > MAX_BLOB_SIZE
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid file size.",
+      });
+    }
+  } else {
+    // Text-only skill or software project.
+    // Keep all file metadata empty when no file is attached.
+    body.file_url = "";
+    body.file_name = "";
+    body.file_type = "";
+    body.file_size = 0;
   }
 
-  const fileExtension = getFileExtension(fileName);
-
-  if (
-    !ALLOWED_TYPES.has(fileType) &&
-    !ALLOWED_EXTENSIONS.has(fileExtension)
-  ) {
-    return res.status(400).json({
-      success: false,
-      error: "Unsupported file type.",
-    });
-  }
-
-  if (
-    !Number.isSafeInteger(fileSize) ||
-    fileSize <= 0 ||
-    fileSize > MAX_BLOB_SIZE
-  ) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid file size.",
-    });
+  for (const [label, value] of [
+    ["Live URL", liveUrl],
+    ["GitHub URL", githubUrl],
+  ]) {
+    if (value && !/^https:\/\//i.test(value)) {
+      return res.status(400).json({
+        success: false,
+        error: `${label} must use HTTPS.`,
+      });
+    }
   }
 
   if (contentType === "profile_image" && published) {
@@ -659,6 +768,10 @@ async function updateContent(req, res, sql) {
       file_name = ${fileName},
       file_type = ${fileType},
       file_size = ${fileSize},
+      technologies = ${technologies},
+      features = ${features},
+      live_url = ${liveUrl},
+      github_url = ${githubUrl},
       published = ${published},
       updated_at = NOW()
     WHERE id = ${id}
@@ -700,7 +813,9 @@ async function deleteContent(req, res, sql) {
     WHERE id = ${id};
   `;
 
-  await deleteBlob(rows[0].file_url);
+  if (rows[0].file_url) {
+    await deleteBlob(rows[0].file_url);
+  }
 
   return res.status(200).json({
     success: true,

@@ -1,9 +1,9 @@
 export const portfolio = {
   name: "Dickson Kiprono",
   shortName: "Dickson",
-  title: "Cybersecurity & Software Developer",
+  title: "Cybersecurity Analyst",
   tagline:
-    "I build secure digital products, practical applications, and automation systems that solve real problems.",
+    "I develop practical cybersecurity capability through security labs, technical investigations, defensive security and continuous learning.",
   location: "Kenya",
 
   social: {

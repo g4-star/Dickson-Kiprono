@@ -3264,3 +3264,117 @@ a {
     padding: 20px;
   }
 }
+
+/* Admin-managed cybersecurity skills */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 34px;
+}
+
+.skill-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 16px;
+  background: var(--card-bg, rgba(255,255,255,.025));
+}
+
+.skill-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 0;
+  color: var(--accent, #65d9ff);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.skill-level {
+  padding: 6px 9px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 20px;
+  color: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.skill-image {
+  display: block;
+  width: calc(100% - 40px);
+  max-height: 190px;
+  margin: 18px 20px 0;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.skill-card-content {
+  padding: 20px;
+}
+
+.skill-category {
+  color: var(--accent, #65d9ff);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.skill-card-content h3 {
+  margin: 10px 0;
+}
+
+.skill-card-content p,
+.skills-empty p {
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.skill-example,
+.skill-capabilities {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border, rgba(255,255,255,.12));
+}
+
+.skill-example strong,
+.skill-capabilities strong {
+  font-size: .78rem;
+  color: var(--accent, #65d9ff);
+}
+
+.skills-empty {
+  margin-top: 34px;
+  padding: 36px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 16px;
+  text-align: center;
+}
+
+.skills-empty h3 {
+  margin: 16px 0 8px;
+}
+
+.skills-empty p {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .skill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .skill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-empty {
+    padding: 24px;
+  }
+}

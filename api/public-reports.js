@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
 
-    const [reports, projects] = await Promise.all([
+    const [reports, projects, skills] = await Promise.all([
       sql`
         SELECT
           id,
@@ -54,12 +54,31 @@ export default async function handler(req, res) {
           AND published = TRUE
         ORDER BY created_at DESC;
       `,
+
+      sql`
+        SELECT
+          id,
+          title,
+          description,
+          objective,
+          category,
+          technologies,
+          features,
+          file_url,
+          file_name,
+          created_at
+        FROM portfolio_content
+        WHERE content_type = 'skill'
+          AND published = TRUE
+        ORDER BY created_at DESC;
+      `,
     ]);
 
     return res.status(200).json({
       success: true,
       reports,
       projects,
+      skills,
     });
   } catch (error) {
     console.error("Public lab content error:", error);

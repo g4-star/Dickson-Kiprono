@@ -16,6 +16,7 @@ import "./PrivateMainAdmin.css";
 
 const CONTENT_TYPES = [
   ["report", "Lab Report"],
+  ["skill", "Cybersecurity Skill"],
   ["certificate", "Certificate"],
   ["cv", "CV"],
   ["project_document", "Project Documentation"],
@@ -66,6 +67,8 @@ export default function PrivateMainAdmin({ onBack }) {
     description: "",
     objective: "",
     category: "",
+    technologies: "",
+    features: "",
     issuer: "",
     published: false,
     file: null,
@@ -179,7 +182,7 @@ export default function PrivateMainAdmin({ onBack }) {
       return;
     }
 
-    if (!form.file) {
+    if (!form.file && form.content_type !== "skill") {
       setMessage("Choose a file first.");
       return;
     }
@@ -189,30 +192,45 @@ export default function PrivateMainAdmin({ onBack }) {
     setMessage("");
 
     try {
-      const file = form.file;
+      let fileData = {
+        file_url: "",
+        file_name: "",
+        file_type: "",
+        file_size: 0,
+      };
 
-      setMessage("Preparing secure upload...");
+      if (form.file) {
+        const file = form.file;
+        setMessage("Preparing secure upload...");
 
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/private-admin-blob-upload",
-        clientPayload: JSON.stringify({
-          content_type: form.content_type,
+        const blob = await upload(file.name, file, {
+          access: "public",
+          handleUploadUrl: "/api/private-admin-blob-upload",
+          clientPayload: JSON.stringify({
+            content_type: form.content_type,
+            file_name: file.name,
+          }),
+          multipart: true,
+          onUploadProgress: ({ percentage }) => {
+            const progress = Math.max(
+              0,
+              Math.min(100, Math.round(percentage))
+            );
+
+            setUploadProgress(progress);
+            setMessage(`Uploading ${progress}%...`);
+          },
+        });
+
+        fileData = {
+          file_url: blob.url,
           file_name: file.name,
-        }),
-        multipart: true,
-        onUploadProgress: ({ percentage }) => {
-          const progress = Math.max(
-            0,
-            Math.min(100, Math.round(percentage))
-          );
+          file_type: file.type || blob.contentType,
+          file_size: file.size,
+        };
+      }
 
-          setUploadProgress(progress);
-          setMessage(`Uploading ${progress}%...`);
-        },
-      });
-
-      setMessage("Upload complete. Saving content metadata...");
+      setMessage("Saving content metadata...");
 
       const response = await fetch(
         "/api/private-admin-content-create",
@@ -228,11 +246,10 @@ export default function PrivateMainAdmin({ onBack }) {
             description: form.description,
             objective: form.objective,
             category: form.category,
+            technologies: form.technologies,
+            features: form.features,
             published: form.published,
-            file_url: blob.url,
-            file_name: file.name,
-            file_type: file.type || blob.contentType,
-            file_size: file.size,
+            ...fileData,
           }),
         }
       );
@@ -254,6 +271,8 @@ export default function PrivateMainAdmin({ onBack }) {
         description: "",
         objective: "",
         category: "",
+        technologies: "",
+        features: "",
         issuer: "",
         published: false,
         file: null,
@@ -288,6 +307,8 @@ export default function PrivateMainAdmin({ onBack }) {
       description: item.description || "",
       objective: item.objective || "",
       category: item.category || "",
+      technologies: item.technologies || "",
+      features: item.features || "",
       published: Boolean(item.published),
       file: null,
     });
@@ -311,6 +332,9 @@ export default function PrivateMainAdmin({ onBack }) {
       description: "",
       objective: "",
       category: "",
+      technologies: "",
+      features: "",
+      issuer: "",
       published: false,
       file: null,
     });
@@ -407,6 +431,8 @@ export default function PrivateMainAdmin({ onBack }) {
             description: form.description,
             objective: form.objective,
             category: form.category,
+            technologies: form.technologies,
+            features: form.features,
             published: form.published,
             ...fileData,
           }),
@@ -429,6 +455,8 @@ export default function PrivateMainAdmin({ onBack }) {
         description: "",
         objective: "",
         category: "",
+        technologies: "",
+        features: "",
         issuer: "",
         published: false,
         file: null,
@@ -712,10 +740,55 @@ export default function PrivateMainAdmin({ onBack }) {
                 placeholder={
                   form.content_type === "report"
                     ? "Lab name"
-                    : "Content title"
+                    : form.content_type === "skill"
+                      ? "e.g. Network Traffic Analysis"
+                      : "Content title"
                 }
               />
             </label>
+
+            {form.content_type === "skill" && (
+              <>
+                <label>
+                  Proficiency Level
+                  <select
+                    value={form.technologies}
+                    onChange={(event) =>
+                      updateForm("technologies", event.target.value)
+                    }
+                  >
+                    <option value="">Select proficiency level</option>
+                    <option value="Learning">Learning</option>
+                    <option value="Working Knowledge">Working Knowledge</option>
+                    <option value="Hands-on">Hands-on</option>
+                  </select>
+                </label>
+
+                <label>
+                  Practical Example
+                  <textarea
+                    value={form.objective}
+                    onChange={(event) =>
+                      updateForm("objective", event.target.value)
+                    }
+                    placeholder="Describe a lab, exercise, or practical task demonstrating this skill."
+                    rows="4"
+                  />
+                </label>
+
+                <label>
+                  Additional Topics / Capabilities
+                  <textarea
+                    value={form.features}
+                    onChange={(event) =>
+                      updateForm("features", event.target.value)
+                    }
+                    placeholder="List related tools, techniques, or topics."
+                    rows="3"
+                  />
+                </label>
+              </>
+            )}
 
             {form.content_type === "report" && (
               <label>
@@ -805,7 +878,9 @@ export default function PrivateMainAdmin({ onBack }) {
             </label>
 
             <label>
-              File
+              {form.content_type === "skill"
+                ? "Screenshot (optional)"
+                : "File"}
               <input
                 id="private-file-input"
                 type="file"
