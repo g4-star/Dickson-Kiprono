@@ -304,6 +304,7 @@ function App() {
   const [labReports, setLabReports] = useState([]);
   const [labProjects, setLabProjects] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [selectedSkill, setSelectedSkill] = useState(null);
   const [privateAdminPage, setPrivateAdminPage] = useState(
     window.location.pathname === "/private-admin"
   );
@@ -1092,7 +1093,21 @@ function App() {
           {skills.length > 0 ? (
             <div className="skill-grid">
               {skills.map((skill, index) => (
-                <article className="skill-card" key={skill.id}>
+                <article
+                  className="skill-card skill-card-clickable"
+                  key={skill.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-haspopup="dialog"
+                  aria-label={`View details for ${skill.title}`}
+                  onClick={() => setSelectedSkill(skill)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedSkill(skill);
+                    }
+                  }}
+                >
                   <div className="skill-card-top">
                     <span>{String(index + 1).padStart(2, "0")}</span>
                     {skill.technologies && (
@@ -1146,6 +1161,77 @@ function App() {
             </div>
           )}
         </section>
+
+        {selectedSkill && (
+          <div
+            className="skill-modal-backdrop"
+            role="presentation"
+            tabIndex={-1}
+            onClick={() => setSelectedSkill(null)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") setSelectedSkill(null);
+            }}
+          >
+            <section
+              className="skill-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="skill-modal-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="skill-modal-close"
+                aria-label="Close skill details"
+                onClick={() => setSelectedSkill(null)}
+              >
+                <X size={22} />
+              </button>
+
+              {selectedSkill.file_url && (
+                <img
+                  className="skill-modal-image"
+                  src={selectedSkill.file_url}
+                  alt={`${selectedSkill.title} full-size screenshot`}
+                />
+              )}
+
+              <div className="skill-modal-content">
+                {selectedSkill.category && (
+                  <span className="skill-category">
+                    {selectedSkill.category}
+                  </span>
+                )}
+
+                {selectedSkill.technologies && (
+                  <span className="skill-level">
+                    {selectedSkill.technologies}
+                  </span>
+                )}
+
+                <h2 id="skill-modal-title">{selectedSkill.title}</h2>
+
+                {selectedSkill.description && (
+                  <p>{selectedSkill.description}</p>
+                )}
+
+                {selectedSkill.objective && (
+                  <div className="skill-example">
+                    <strong>Practical example</strong>
+                    <p>{selectedSkill.objective}</p>
+                  </div>
+                )}
+
+                {selectedSkill.features && (
+                  <div className="skill-capabilities">
+                    <strong>Topics and capabilities</strong>
+                    <p>{selectedSkill.features}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
 
         {/* LEARNING */}
         <section id="learning" className="section learning-section">
