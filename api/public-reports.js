@@ -20,6 +20,17 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
 
+    // Ensure skill fields exist before querying published content.
+    await sql`
+      ALTER TABLE portfolio_content
+      ADD COLUMN IF NOT EXISTS technologies TEXT DEFAULT '';
+    `;
+
+    await sql`
+      ALTER TABLE portfolio_content
+      ADD COLUMN IF NOT EXISTS features TEXT DEFAULT '';
+    `;
+
     const [reports, projects, skills] = await Promise.all([
       sql`
         SELECT
